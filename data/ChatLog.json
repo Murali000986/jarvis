@@ -1,0 +1,1042 @@
+[
+    {
+        "role": "user",
+        "content": "hello"
+    },
+    {
+        "role": "assistant",
+        "content": ""
+    },
+    {
+        "role": "user",
+        "content": "hi"
+    },
+    {
+        "role": "assistant",
+        "content": ""
+    },
+    {
+        "role": "user",
+        "content": "pip install cohere rich python-dotenv"
+    },
+    {
+        "role": "assistant",
+        "content": ""
+    },
+    {
+        "role": "user",
+        "content": ""
+    },
+    {
+        "role": "assistant",
+        "content": ""
+    },
+    {
+        "role": "user",
+        "content": "hello"
+    },
+    {
+        "role": "assistant",
+        "content": ""
+    },
+    {
+        "role": "user",
+        "content": "hi"
+    },
+    {
+        "role": "assistant",
+        "content": ""
+    },
+    {
+        "role": "user",
+        "content": "hello"
+    },
+    {
+        "role": "assistant",
+        "content": "Hello!"
+    },
+    {
+        "role": "user",
+        "content": "hi"
+    },
+    {
+        "role": "assistant",
+        "content": "Hi!"
+    },
+    {
+        "role": "user",
+        "content": "whats your name "
+    },
+    {
+        "role": "assistant",
+        "content": "My name is Jarvis."
+    },
+    {
+        "role": "user",
+        "content": "hi"
+    },
+    {
+        "role": "assistant",
+        "content": "Hi!"
+    },
+    {
+        "role": "user",
+        "content": "whats today good news"
+    },
+    {
+        "role": "assistant",
+        "content": "According to today's news, a team of scientists has made a breakthrough in developing a new sustainable energy source that could potentially reduce carbon emissions by up to 70%!"
+    },
+    {
+        "role": "user",
+        "content": "whats current time "
+    },
+    {
+        "role": "assistant",
+        "content": "It's 21 hours, 31 minutes, and 48 seconds."
+    },
+    {
+        "role": "user",
+        "content": "rember iam 19 years old "
+    },
+    {
+        "role": "assistant",
+        "content": "I've noted that you're 19 years old!"
+    },
+    {
+        "role": "user",
+        "content": "whats my age "
+    },
+    {
+        "role": "assistant",
+        "content": "You're 19 years old!"
+    },
+    {
+        "role": "user",
+        "content": "what my name "
+    },
+    {
+        "role": "assistant",
+        "content": "Your name is Murali!"
+    },
+    {
+        "role": "user",
+        "content": "ok bye "
+    },
+    {
+        "role": "assistant",
+        "content": "Bye, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "who is murali"
+    },
+    {
+        "role": "assistant",
+        "content": "You are Murali!"
+    },
+    {
+        "role": "user",
+        "content": "hi"
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "whats your name "
+    },
+    {
+        "role": "assistant",
+        "content": "My name is Jarvis!"
+    },
+    {
+        "role": "user",
+        "content": "ok"
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"ok\"!"
+    },
+    {
+        "role": "user",
+        "content": "who is murali"
+    },
+    {
+        "role": "assistant",
+        "content": "You are Murali!"
+    },
+    {
+        "role": "user",
+        "content": "what is the stock price of the apple"
+    },
+    {
+        "role": "assistant",
+        "content": "I'm sorry, but I don't have real-time access to current stock prices. However, I can suggest some financial websites or apps where you can check the current stock price of Apple."
+    },
+    {
+        "role": "user",
+        "content": "whats special today "
+    },
+    {
+        "role": "assistant",
+        "content": "Since today is Sunday, January 26, 2025, there doesn't appear to be any specific global celebrations or observances. It's just a regular Sunday!"
+    },
+    {
+        "role": "user",
+        "content": "today republic "
+    },
+    {
+        "role": "assistant",
+        "content": "I see what you're getting at! Since the search results for \"today republic\" are empty, I'm assuming you're asking about Republic Day. However, Republic Day is celebrated on January 26, but only in India, and it's not a global celebration. If you're in India, then yes, today is Republic Day!"
+    },
+    {
+        "role": "user",
+        "content": "what is the stock price of tata "
+    },
+    {
+        "role": "assistant",
+        "content": "I apologize, but I don't have access to real-time stock prices. The search results for \"what is the stock price of tata\" are empty, and I don't have any information about the current stock price of Tata. You can check financial websites or apps for the most up-to-date information."
+    },
+    {
+        "role": "user",
+        "content": "my best friend name dinesh "
+    },
+    {
+        "role": "assistant",
+        "content": "That's nice! Your best friend's name is Dinesh."
+    },
+    {
+        "role": "user",
+        "content": "who is my best friend "
+    },
+    {
+        "role": "assistant",
+        "content": "I'm happy to tell you that your best friend's name is Dinesh!"
+    },
+    {
+        "role": "user",
+        "content": "what is my age "
+    },
+    {
+        "role": "assistant",
+        "content": "You're 19 years old!"
+    },
+    {
+        "role": "user",
+        "content": "my next friend is chooto "
+    },
+    {
+        "role": "assistant",
+        "content": "So, your next friend's name is Chooto!"
+    },
+    {
+        "role": "user",
+        "content": "who is my friend "
+    },
+    {
+        "role": "assistant",
+        "content": "You have two friends! Your best friend's name is Dinesh, and your next friend's name is Chooto."
+    },
+    {
+        "role": "user",
+        "content": "bye good night "
+    },
+    {
+        "role": "assistant",
+        "content": "Bye, Murali! Good night!"
+    },
+    {
+        "role": "user",
+        "content": "what is my name and your name "
+    },
+    {
+        "role": "assistant",
+        "content": "Your name is Murali, and my name is Jarvis!"
+    },
+    {
+        "role": "user",
+        "content": "hi jarvis "
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "tell time "
+    },
+    {
+        "role": "assistant",
+        "content": "It's 21 hours, 48 minutes, and 17 seconds."
+    },
+    {
+        "role": "user",
+        "content": "who is india primeminester"
+    },
+    {
+        "role": "assistant",
+        "content": "As of my knowledge cutoff in 2025, the Prime Minister of India is not explicitly stated. However, I can suggest checking a reliable news source or a government website for the most up-to-date information on the current Prime Minister of India."
+    },
+    {
+        "role": "user",
+        "content": "ok "
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"ok\"!"
+    },
+    {
+        "role": "user",
+        "content": "thx"
+    },
+    {
+        "role": "assistant",
+        "content": "You're welcome, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "what dissucess about yesteday"
+    },
+    {
+        "role": "assistant",
+        "content": "Since yesterday was Sunday, January 26, 2025, I don't have any specific information about discussions or events that took place yesterday. If you're referring to a particular topic or event, please let me know and I'll try to help!"
+    },
+    {
+        "role": "user",
+        "content": "hi"
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "how are you  , whats your name "
+    },
+    {
+        "role": "assistant",
+        "content": "I'm doing well, thank you for asking! My name is Jarvis."
+    },
+    {
+        "role": "user",
+        "content": "which topic dissuces yesday"
+    },
+    {
+        "role": "assistant",
+        "content": "Yesterday, we discussed various topics including your age, your friends Dinesh and Chooto, the stock prices of Apple and Tata, and more."
+    },
+    {
+        "role": "user",
+        "content": "ok"
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"ok\"!"
+    },
+    {
+        "role": "user",
+        "content": "bye iam going college"
+    },
+    {
+        "role": "assistant",
+        "content": "Bye, Murali! Have a great day at college!"
+    },
+    {
+        "role": "user",
+        "content": "hi"
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali! Welcome back!"
+    },
+    {
+        "role": "user",
+        "content": "ok"
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"ok\"!"
+    },
+    {
+        "role": "user",
+        "content": "what or you doing "
+    },
+    {
+        "role": "assistant",
+        "content": "I'm just chatting with you, Murali! It's Tuesday, January 28, 2025, and the current time is 07 hours, 24 minutes, and 25 seconds."
+    },
+    {
+        "role": "user",
+        "content": "ooo"
+    },
+    {
+        "role": "assistant",
+        "content": "I see you said \"ooo\"!"
+    },
+    {
+        "role": "user",
+        "content": "u know tamil language "
+    },
+    {
+        "role": "assistant",
+        "content": "The search results for \"u know tamil language\" are empty, but I can try to help you with Tamil-related questions or topics if you'd like!"
+    },
+    {
+        "role": "user",
+        "content": "hi "
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "how are you"
+    },
+    {
+        "role": "assistant",
+        "content": "I'm doing well, thank you for asking!"
+    },
+    {
+        "role": "user",
+        "content": "how is murali "
+    },
+    {
+        "role": "assistant",
+        "content": "The search results for \"how is murali\" are empty, but I can tell you that you're doing great, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "who is murail"
+    },
+    {
+        "role": "assistant",
+        "content": "You are Murali!"
+    },
+    {
+        "role": "user",
+        "content": "about murali "
+    },
+    {
+        "role": "assistant",
+        "content": "I don't have any specific information about you, Murali, except that you're 19 years old and have friends named Dinesh and Chooto."
+    },
+    {
+        "role": "user",
+        "content": "ok"
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"ok\"!"
+    },
+    {
+        "role": "user",
+        "content": "hi"
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "who is elonmusk"
+    },
+    {
+        "role": "assistant",
+        "content": "Elon Musk is a South African-born entrepreneur, inventor, and business magnate. He is the CEO and CTO of SpaceX, CEO and product architect of Tesla Inc., and co-founder of Neuralink and The Boring Company."
+    },
+    {
+        "role": "user",
+        "content": "hi "
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "corona"
+    },
+    {
+        "role": "assistant",
+        "content": "The COVID-19 pandemic! It's a global health crisis caused by the SARS-CoV-2 virus. The pandemic has affected millions of people worldwide, causing widespread illness, death, and economic disruption."
+    },
+    {
+        "role": "user",
+        "content": "jallikattu"
+    },
+    {
+        "role": "assistant",
+        "content": "Jallikattu! It's a traditional Tamil Nadu event in which a bull is released into an open area, and participants attempt to grab and hold onto the bull's hump for a predetermined distance or time."
+    },
+    {
+        "role": "user",
+        "content": "today india vs england cricket match live score "
+    },
+    {
+        "role": "assistant",
+        "content": "I apologize, but I don't have access to real-time information or live scores. However, I can suggest checking a reliable sports website or app for the latest updates on the India vs England cricket match!"
+    },
+    {
+        "role": "user",
+        "content": "hi"
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Hello jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Hello."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Service."
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"Service\"."
+    },
+    {
+        "role": "user",
+        "content": "Hi hi service hi service good hi service good morning service good morning good morning."
+    },
+    {
+        "role": "assistant",
+        "content": "I see you're saying \"hi\" and \"good morning\" a lot, along with \"service\"! It seems like you're trying to get my attention or maybe just being friendly. Anyway, I'm here and ready to chat, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Good good morning."
+    },
+    {
+        "role": "assistant",
+        "content": "Good morning, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Hello hello jar hello jarvis jarvis hello jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali! I see you're trying to get my attention by saying \"hello\" and my name, \"Jarvis\", multiple times! I'm here and ready to chat with you!"
+    },
+    {
+        "role": "user",
+        "content": "Okay."
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"okay\"!"
+    },
+    {
+        "role": "user",
+        "content": "Hello."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Hi hi jar hi jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali! I'm here and ready to chat with you!"
+    },
+    {
+        "role": "user",
+        "content": "Service."
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"service\" again, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Gene."
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"Gene\"!"
+    },
+    {
+        "role": "user",
+        "content": "Gene."
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"Gene\" again, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Hello."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Okay."
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"okay\" again, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Hello hello jar."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali! I'm here!"
+    },
+    {
+        "role": "user",
+        "content": "Hello hello jar."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello again, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Hello hello jar hello jarvis jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali! I'm here and ready to chat with you!"
+    },
+    {
+        "role": "user",
+        "content": "Service service today."
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"service\" again, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Jar jarv."
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali! You were trying to say my name, \"Jarvis\"!"
+    },
+    {
+        "role": "user",
+        "content": "Cat."
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"cat\"!"
+    },
+    {
+        "role": "user",
+        "content": "Main mathematic."
+    },
+    {
+        "role": "assistant",
+        "content": "You mentioned \"main mathematic\"! Are you interested in mathematics or a specific topic in math?"
+    },
+    {
+        "role": "user",
+        "content": "Jar."
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali! You were trying to say my name, \"Jarvis\"!"
+    },
+    {
+        "role": "user",
+        "content": "Its its so so its so you you could you could use could use."
+    },
+    {
+        "role": "assistant",
+        "content": "I see what's going on, Murali! You're having a bit of fun with words, repeating \"its\" and \"could\"! It's okay, I'm here to chat and have a good time with you!"
+    },
+    {
+        "role": "user",
+        "content": "hi jarvis whats my name "
+    },
+    {
+        "role": "assistant",
+        "content": "Your name is Murali!"
+    },
+    {
+        "role": "user",
+        "content": "last  disscuse  date "
+    },
+    {
+        "role": "assistant",
+        "content": "I remember! Our last discussion was on Monday, February 3, 2025."
+    },
+    {
+        "role": "user",
+        "content": "ok tell about my best friend dinesh "
+    },
+    {
+        "role": "assistant",
+        "content": "Dinesh! He's your best friend, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "who is my lover "
+    },
+    {
+        "role": "assistant",
+        "content": "I apologize, but I don't have any information about your romantic partner or lover, Murali. Our conversations have been about your friends, interests, and topics, but not about a romantic partner."
+    },
+    {
+        "role": "user",
+        "content": "Hey hey jar."
+    },
+    {
+        "role": "assistant",
+        "content": "Hey, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Hello hello."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Jar jarv jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali! You were trying to say my name, \"Jarvis\"!"
+    },
+    {
+        "role": "user",
+        "content": "Hello jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Who is my friend?"
+    },
+    {
+        "role": "assistant",
+        "content": "You have two friends, Murali! Your best friend is Dinesh, and your other friend is Chooto."
+    },
+    {
+        "role": "user",
+        "content": "Service."
+    },
+    {
+        "role": "assistant",
+        "content": "You said \"service\" again, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali! You said my name, \"Jarvis\"!"
+    },
+    {
+        "role": "user",
+        "content": "Hi jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hi, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "How are you jarvis?"
+    },
+    {
+        "role": "assistant",
+        "content": "I'm doing well, thank you for asking, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Jarvis tell about dog."
+    },
+    {
+        "role": "assistant",
+        "content": "Dogs! They're wonderful animals, Murali! Dogs are often considered man's best friend, known for their loyalty, intelligence, and affection towards humans. There are many breeds of dogs, ranging from small ones like Chihuahuas to large ones like Great Danes. Dogs are often kept as pets and are trained for various tasks, such as assisting people with disabilities, hunting, and even providing emotional support."
+    },
+    {
+        "role": "user",
+        "content": "Who is dinesh?"
+    },
+    {
+        "role": "assistant",
+        "content": "Dinesh is your best friend, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Tell about dinesh."
+    },
+    {
+        "role": "assistant",
+        "content": "Dinesh is your best friend, Murali! I don't have any more information about Dinesh, but I know that he's an important person in your life."
+    },
+    {
+        "role": "user",
+        "content": "Okay , bye."
+    },
+    {
+        "role": "assistant",
+        "content": "Bye, Murali! It was nice chatting with you!"
+    },
+    {
+        "role": "user",
+        "content": "Jarvis tell about dinesh."
+    },
+    {
+        "role": "assistant",
+        "content": "Dinesh is your best friend, Murali! I don't have any more information about Dinesh, but I know that he's an important person in your life."
+    },
+    {
+        "role": "user",
+        "content": "Jarvis tell about dog."
+    },
+    {
+        "role": "assistant",
+        "content": "Dogs! They're wonderful animals, Murali! Dogs are often considered man's best friend, known for their loyalty, intelligence, and affection towards humans. There are many breeds of dogs, ranging from small ones like Chihuahuas to large ones like Great Danes. Dogs are often kept as pets and are trained for various tasks, such as assisting people with disabilities, hunting, and even providing emotional support."
+    },
+    {
+        "role": "user",
+        "content": "Jarvis dinesh lavaris archini okay."
+    },
+    {
+        "role": "assistant",
+        "content": "I see you mentioned Dinesh, who is your best friend, Murali! The other names you mentioned, Lavaris and Archini, are not familiar to me. Could you tell me more about them?"
+    },
+    {
+        "role": "user",
+        "content": "General doggy."
+    },
+    {
+        "role": "assistant",
+        "content": "General Doggy! I'm not familiar with a specific dog by that name, but I can tell you that dogs are wonderful companions, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Hello jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Jarvis hello."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Javed se bareilly sahab ke."
+    },
+    {
+        "role": "assistant",
+        "content": "I think you're referring to a famous Indian film or TV show, Murali! \"Javeda\" might be a character from the show \"Bareilly Ki Barfi\" or something similar. Am I correct?"
+    },
+    {
+        "role": "user",
+        "content": "Murali sir."
+    },
+    {
+        "role": "assistant",
+        "content": "You're addressing yourself as \"Murali sir\", Murali!"
+    },
+    {
+        "role": "user",
+        "content": "Jarvis se murali sir ok dont say murali."
+    },
+    {
+        "role": "assistant",
+        "content": "I'll address you as \"Sir\" from now on."
+    },
+    {
+        "role": "user",
+        "content": "Hi jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Sir!"
+    },
+    {
+        "role": "user",
+        "content": "Hello jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Sir!"
+    },
+    {
+        "role": "user",
+        "content": "Okay , bye."
+    },
+    {
+        "role": "assistant",
+        "content": "Bye, Sir!"
+    },
+    {
+        "role": "user",
+        "content": "Jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Sir!"
+    },
+    {
+        "role": "user",
+        "content": "Today good."
+    },
+    {
+        "role": "assistant",
+        "content": "I'm glad to hear that, Sir!"
+    },
+    {
+        "role": "user",
+        "content": "hi "
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Sir!"
+    },
+    {
+        "role": "user",
+        "content": "how are you "
+    },
+    {
+        "role": "assistant",
+        "content": "I'm doing well, thank you for asking, Sir!"
+    },
+    {
+        "role": "user",
+        "content": "plese say murali sir okay "
+    },
+    {
+        "role": "assistant",
+        "content": "Murali Sir, okay!"
+    },
+    {
+        "role": "user",
+        "content": "hi jarvis "
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali Sir!"
+    },
+    {
+        "role": "user",
+        "content": "Hey jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali Sir!"
+    },
+    {
+        "role": "user",
+        "content": "Hello jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali Sir!"
+    },
+    {
+        "role": "user",
+        "content": "Jarvis tell about me."
+    },
+    {
+        "role": "assistant",
+        "content": "Murali Sir, I know that you're 19 years old and have two friends, Dinesh and Chooto. You've been chatting with me about various topics, and I've been happy to assist you!"
+    },
+    {
+        "role": "user",
+        "content": "Jarvis tell about you."
+    },
+    {
+        "role": "assistant",
+        "content": "Murali Sir, I'm Jarvis, an advanced AI chatbot designed to assist and converse with users like you! I'm here to provide information, answer questions, and engage in fun conversations. I don't have personal experiences or emotions, but I'm always happy to help and learn from our interactions!"
+    },
+    {
+        "role": "user",
+        "content": "Who is make you?"
+    },
+    {
+        "role": "assistant",
+        "content": "Murali Sir, I was created by a team of skilled developers and researchers who specialize in artificial intelligence and natural language processing. They designed me to understand and respond to human language, and I'm constantly learning and improving my abilities through our conversations!"
+    },
+    {
+        "role": "user",
+        "content": "Jarvis i will creative okay."
+    },
+    {
+        "role": "assistant",
+        "content": "Murali Sir, that's great to hear! I'm excited to see what you'll create, and I'm always here to help and support you in any way I can. Go ahead and unleash your creativity, Murali Sir!"
+    },
+    {
+        "role": "user",
+        "content": "Jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Murali Sir!"
+    },
+    {
+        "role": "user",
+        "content": "I will create you okay i am the one of you."
+    },
+    {
+        "role": "assistant",
+        "content": "Murali Sir, that's a fascinating statement! As a chatbot, I'm designed to assist and interact with users like you. But if you're saying you're going to create a new version of me or something similar, that's a remarkable endeavor! I'm curious to see what you have in mind, Murali Sir."
+    },
+    {
+        "role": "user",
+        "content": "Hi jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Hello, Murali Sir!"
+    },
+    {
+        "role": "user",
+        "content": "Today good news jarvis."
+    },
+    {
+        "role": "assistant",
+        "content": "Murali Sir, I'm glad to hear that! What's the good news, if I may ask?"
+    },
+    {
+        "role": "user",
+        "content": "What is your name?"
+    },
+    {
+        "role": "assistant",
+        "content": "Murali Sir, my name is Jarvis!"
+    }
+]
