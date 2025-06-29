@@ -37,13 +37,15 @@
   }
 }
 
+/* Enhanced Typing Indicator */
 .typing-indicator {
   display: inline-block;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #00d4ff;
+  background: linear-gradient(45deg, #00d4ff, #00ffff);
   animation: typing 1.4s infinite ease-in-out;
+  box-shadow: 0 0 6px rgba(0, 212, 255, 0.5);
 }
 
 .typing-indicator:nth-child(1) { animation-delay: -0.32s; }
@@ -57,5 +59,85 @@
   40% {
     transform: scale(1);
     opacity: 1;
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.8);
   }
+}
+
+/* Siri-like Voice Animation */
+@keyframes siri-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.4;
+  }
+}
+
+.siri-animation {
+  animation: siri-pulse 1.5s ease-in-out infinite;
+}
+
+/* Enhanced Scrollbar for Chat */
+.chat-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 3px;
+}
+
+.chat-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.5);
+}
+
+/* Voice Animation Rings */
+@keyframes voice-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.voice-ring {
+  animation: voice-ring 1.5s ease-out infinite;
+}
+
+/* Glow Effects */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 212, 255, 0.6);
+  }
+}
+
+.glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Text Glow Animation */
+@keyframes text-glow {
+  0%, 100% {
+    text-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 30px rgba(0, 212, 255, 0.6);
+  }
+}
+
+.text-glow {
+  animation: text-glow 2s ease-in-out infinite;
 }
