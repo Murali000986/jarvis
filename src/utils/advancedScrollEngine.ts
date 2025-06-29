@@ -7,6 +7,7 @@ export interface ScrollCommand {
   target?: string;
   continuous?: boolean;
   stopCondition?: string;
+  duration?: number;
 }
 
 export interface ScrollResponse {
@@ -21,6 +22,7 @@ export class AdvancedScrollEngine {
   private scrollInterval: NodeJS.Timeout | null = null;
   private currentScrollCommand: ScrollCommand | null = null;
   private scrollHistory: Array<{ x: number; y: number; timestamp: Date }> = [];
+  private scrollStartTime: number = 0;
 
   constructor() {
     this.initializeScrollEngine();
@@ -29,7 +31,7 @@ export class AdvancedScrollEngine {
   private initializeScrollEngine(): void {
     // Track scroll position for smart features
     window.addEventListener('scroll', this.trackScrollPosition.bind(this));
-    console.log('Advanced Scroll Engine initialized');
+    console.log('Advanced Scroll Engine v2.0 initialized');
   }
 
   private trackScrollPosition(): void {
@@ -115,19 +117,22 @@ export class AdvancedScrollEngine {
   private async autoScroll(command: ScrollCommand): Promise<ScrollResponse> {
     return new Promise((resolve) => {
       const amount = command.amount || 100;
-      const speed = command.speed || 1000; // milliseconds between scrolls
+      const speed = command.speed || 1000;
       const direction = command.direction;
+      const duration = command.duration || 20000; // Default 20 seconds
+      
       let scrollCount = 0;
-      const maxScrolls = 20; // Prevent infinite scrolling
+      const maxScrolls = Math.floor(duration / speed);
 
       this.isScrolling = true;
+      this.scrollStartTime = Date.now();
 
       const performScroll = () => {
         if (!this.isScrolling || scrollCount >= maxScrolls) {
           this.stopScrolling();
           resolve({
             success: true,
-            message: `Auto-scroll completed. Scrolled ${scrollCount} times.`,
+            message: `Auto-scroll completed. Scrolled ${scrollCount} times in ${Math.round((Date.now() - this.scrollStartTime) / 1000)}s.`,
             position: { x: window.scrollX, y: window.scrollY },
             completed: true
           });
@@ -136,6 +141,9 @@ export class AdvancedScrollEngine {
 
         const previousY = window.scrollY;
         const previousX = window.scrollX;
+
+        // Add visual feedback during auto-scroll
+        this.addScrollIndicator(direction);
 
         switch (direction) {
           case 'up':
@@ -180,14 +188,42 @@ export class AdvancedScrollEngine {
       // Initial response
       resolve({
         success: true,
-        message: `Started auto-scrolling ${direction}`,
+        message: `Started auto-scrolling ${direction} for ${duration/1000}s`,
         position: { x: window.scrollX, y: window.scrollY }
       });
     });
   }
 
+  private addScrollIndicator(direction: string): void {
+    // Create visual indicator for auto-scroll
+    const indicator = document.createElement('div');
+    indicator.className = 'scroll-indicator';
+    indicator.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 212, 255, 0.9);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      z-index: 10000;
+      pointer-events: none;
+      animation: pulse 1s infinite;
+    `;
+    indicator.textContent = `Auto-scrolling ${direction}...`;
+    
+    document.body.appendChild(indicator);
+    
+    setTimeout(() => {
+      if (indicator.parentNode) {
+        indicator.parentNode.removeChild(indicator);
+      }
+    }, 1000);
+  }
+
   private async smartScroll(command: ScrollCommand): Promise<ScrollResponse> {
-    // Smart scroll analyzes page content and scrolls intelligently
     const target = command.target;
     
     if (target) {
@@ -200,7 +236,7 @@ export class AdvancedScrollEngine {
 
   private async scrollToElement(selector: string): Promise<ScrollResponse> {
     try {
-      const element = document.querySelector(selector);
+      let element = document.querySelector(selector);
       
       if (!element) {
         // Try to find element by text content
@@ -209,14 +245,29 @@ export class AdvancedScrollEngine {
         );
         
         if (elements.length > 0) {
-          elements[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-          return {
-            success: true,
-            message: `Scrolled to element containing "${selector}"`,
-            position: { x: window.scrollX, y: window.scrollY }
-          };
+          element = elements[0];
         }
-        
+      }
+
+      if (!element) {
+        // Try common content selectors
+        const commonSelectors = [
+          `[id*="${selector}"]`,
+          `[class*="${selector}"]`,
+          `h1:contains("${selector}")`,
+          `h2:contains("${selector}")`,
+          `h3:contains("${selector}")`,
+          `.${selector}`,
+          `#${selector}`
+        ];
+
+        for (const sel of commonSelectors) {
+          element = document.querySelector(sel);
+          if (element) break;
+        }
+      }
+      
+      if (!element) {
         return {
           success: false,
           message: `Element "${selector}" not found`
@@ -224,6 +275,9 @@ export class AdvancedScrollEngine {
       }
 
       element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Highlight the element briefly
+      this.highlightElement(element as HTMLElement);
       
       return {
         success: true,
@@ -238,28 +292,51 @@ export class AdvancedScrollEngine {
     }
   }
 
+  private highlightElement(element: HTMLElement): void {
+    const originalStyle = element.style.cssText;
+    element.style.cssText += `
+      outline: 3px solid #00d4ff !important;
+      outline-offset: 2px !important;
+      background-color: rgba(0, 212, 255, 0.1) !important;
+      transition: all 0.3s ease !important;
+    `;
+    
+    setTimeout(() => {
+      element.style.cssText = originalStyle;
+    }, 2000);
+  }
+
   private async intelligentScroll(command: ScrollCommand): Promise<ScrollResponse> {
     // Analyze page structure for intelligent scrolling
-    const articles = document.querySelectorAll('article, .article, .post, .content');
+    const articles = document.querySelectorAll('article, .article, .post, .content, .main-content, main');
     const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-    const sections = document.querySelectorAll('section, .section');
+    const sections = document.querySelectorAll('section, .section, .container, .wrapper');
+    const paragraphs = document.querySelectorAll('p');
 
     let targetElement: Element | null = null;
+    const viewportHeight = window.innerHeight;
+    const currentScroll = window.scrollY;
 
     switch (command.direction) {
       case 'down':
-        // Find next article, section, or heading
-        const elementsBelow = Array.from([...articles, ...headings, ...sections])
-          .filter(el => el.getBoundingClientRect().top > window.innerHeight * 0.1)
+        // Find next content section below current view
+        const elementsBelow = Array.from([...articles, ...headings, ...sections, ...paragraphs])
+          .filter(el => {
+            const rect = el.getBoundingClientRect();
+            return rect.top > viewportHeight * 0.2 && rect.height > 50;
+          })
           .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
         
         targetElement = elementsBelow[0] || null;
         break;
         
       case 'up':
-        // Find previous article, section, or heading
-        const elementsAbove = Array.from([...articles, ...headings, ...sections])
-          .filter(el => el.getBoundingClientRect().bottom < window.innerHeight * 0.9)
+        // Find previous content section above current view
+        const elementsAbove = Array.from([...articles, ...headings, ...sections, ...paragraphs])
+          .filter(el => {
+            const rect = el.getBoundingClientRect();
+            return rect.bottom < viewportHeight * 0.8 && rect.height > 50;
+          })
           .sort((a, b) => b.getBoundingClientRect().top - a.getBoundingClientRect().top);
         
         targetElement = elementsAbove[0] || null;
@@ -268,6 +345,8 @@ export class AdvancedScrollEngine {
 
     if (targetElement) {
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      this.highlightElement(targetElement as HTMLElement);
+      
       return {
         success: true,
         message: `Smart scrolled to next content section`,
@@ -286,6 +365,14 @@ export class AdvancedScrollEngine {
       this.scrollInterval = null;
     }
     this.currentScrollCommand = null;
+    
+    // Remove any scroll indicators
+    const indicators = document.querySelectorAll('.scroll-indicator');
+    indicators.forEach(indicator => {
+      if (indicator.parentNode) {
+        indicator.parentNode.removeChild(indicator);
+      }
+    });
   }
 
   public isCurrentlyScrolling(): boolean {
@@ -321,20 +408,22 @@ export class AdvancedScrollEngine {
     return maxScroll > 0 ? (window.scrollY / maxScroll) * 100 : 0;
   }
 
-  // Voice command helpers
+  // Enhanced voice command parsing
   public parseScrollCommand(input: string): ScrollCommand | null {
     const lowerInput = input.toLowerCase();
 
-    // Auto scroll commands
+    // Auto scroll commands with duration
     if (lowerInput.includes('auto scroll') || lowerInput.includes('keep scrolling')) {
       const direction = this.extractDirection(lowerInput);
       const speed = this.extractSpeed(lowerInput);
+      const duration = this.extractDuration(lowerInput);
       
       return {
         type: 'autoScroll',
         direction: direction || 'down',
         speed: speed || 2000,
-        continuous: true
+        continuous: true,
+        duration: duration || 20000
       };
     }
 
@@ -404,8 +493,10 @@ export class AdvancedScrollEngine {
   }
 
   private extractSpeed(input: string): number | null {
+    if (input.includes('very slow')) return 4000;
     if (input.includes('slow')) return 3000;
     if (input.includes('fast') || input.includes('quick')) return 500;
+    if (input.includes('very fast')) return 200;
     if (input.includes('medium')) return 1500;
     
     const match = input.match(/(\d+)\s*(ms|millisecond|milliseconds|second|seconds)/);
@@ -415,6 +506,16 @@ export class AdvancedScrollEngine {
       return unit.includes('second') ? value * 1000 : value;
     }
     
+    return null;
+  }
+
+  private extractDuration(input: string): number | null {
+    const match = input.match(/for\s+(\d+)\s*(second|seconds|minute|minutes)/);
+    if (match) {
+      const value = parseInt(match[1]);
+      const unit = match[2];
+      return unit.includes('minute') ? value * 60000 : value * 1000;
+    }
     return null;
   }
 }

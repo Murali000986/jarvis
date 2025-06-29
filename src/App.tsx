@@ -4,6 +4,8 @@ import ChatInterface from './components/ChatInterface';
 import VoiceVisualizer from './components/VoiceVisualizer';
 import StatusBar from './components/StatusBar';
 import WelcomeScreen from './components/WelcomeScreen';
+import ScrollControls from './components/ScrollControls';
+import FloatingScrollButton from './components/FloatingScrollButton';
 import { useJarvisState } from './hooks/useJarvisState';
 
 function App() {
@@ -11,6 +13,7 @@ function App() {
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
+  const [showScrollControls, setShowScrollControls] = useState(false);
   
   const { 
     isListening, 
@@ -146,6 +149,16 @@ function App() {
                 </div>
               )}
             </div>
+
+            {/* Floating Scroll Buttons */}
+            <FloatingScrollButton isMobile={isMobile} />
+
+            {/* Advanced Scroll Controls */}
+            <ScrollControls 
+              isVisible={showScrollControls}
+              onToggle={() => setShowScrollControls(!showScrollControls)}
+              isMobile={isMobile}
+            />
 
             {/* Mobile Voice Control Button - Only shown on mobile portrait */}
             {isMobile && orientation === 'portrait' && (
