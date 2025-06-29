@@ -27,7 +27,7 @@ function App() {
       setShowWelcome(false);
       // Speak welcome message after the welcome screen
       setTimeout(() => {
-        speakResponse("Welcome to JARVIS version 4.0, your advanced AI assistant with powerful automation capabilities. I can now execute complex command chains, control multiple applications, and understand natural language commands. Try saying 'Open Google and search AI news' or 'Research machine learning' to experience my enhanced automation features.", 'excited');
+        speakResponse("Welcome. I am JARVIS, your advanced artificial intelligence assistant. How may I assist you today?", 'authoritative');
       }, 1000);
     }, 3000);
 

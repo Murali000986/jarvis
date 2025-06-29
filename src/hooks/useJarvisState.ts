@@ -14,7 +14,7 @@ export const useJarvisState = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'assistant',
-      content: 'Good day. I am JARVIS, your advanced artificial intelligence assistant with sophisticated automation capabilities. I can execute complex command sequences, control multiple applications simultaneously, and provide intelligent responses with my authentic voice system. Try saying "Open Google and search AI news" or "Research machine learning" to experience my enhanced automation features.',
+      content: 'Good day. I am JARVIS, your advanced artificial intelligence assistant. I can help you with automation tasks, web control, research, and intelligent responses. How may I assist you today?',
       timestamp: new Date()
     }
   ]);
