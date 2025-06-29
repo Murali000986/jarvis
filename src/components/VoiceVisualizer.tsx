@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mic, MicOff, Volume2, Settings } from 'lucide-react';
+import { Mic, MicOff, Volume2, Settings, HelpCircle } from 'lucide-react';
+import { EnhancedCommandProcessor } from '../utils/enhancedCommandProcessor';
 
 interface VoiceVisualizerProps {
   isListening: boolean;
@@ -14,6 +15,7 @@ const VoiceVisualizer: React.FC<VoiceVisualizerProps> = ({
   onToggleListening
 }) => {
   const [audioLevels, setAudioLevels] = useState<number[]>(new Array(20).fill(0));
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -33,12 +35,25 @@ const VoiceVisualizer: React.FC<VoiceVisualizerProps> = ({
     };
   }, [isListening]);
 
+  const commandExamples = EnhancedCommandProcessor.getCommandExamples();
+
   return (
     <div className="h-full flex flex-col p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-xl font-semibold">Voice Control</h2>
-        <Settings className="w-5 h-5 text-gray-400 cursor-pointer hover:text-jarvis-blue transition-colors" />
+        <div className="flex space-x-2">
+          <motion.button
+            onClick={() => setShowHelp(!showHelp)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="p-2 rounded-lg bg-gray-600/20 text-gray-400 border border-gray-600/30 hover:text-jarvis-blue hover:border-jarvis-blue/30 transition-all duration-200"
+            title="Show command examples"
+          >
+            <HelpCircle className="w-4 h-4" />
+          </motion.button>
+          <Settings className="w-5 h-5 text-gray-400 cursor-pointer hover:text-jarvis-blue transition-colors" />
+        </div>
       </div>
 
       {/* Voice Visualizer */}
@@ -92,20 +107,46 @@ const VoiceVisualizer: React.FC<VoiceVisualizerProps> = ({
           </p>
         </div>
 
-        {/* Voice Commands Help */}
-        <div className="glass-effect rounded-xl p-4 w-full">
-          <h3 className="text-sm font-medium mb-3 flex items-center">
-            <Volume2 className="w-4 h-4 mr-2 text-jarvis-blue" />
-            Voice Commands
-          </h3>
-          <div className="space-y-2 text-xs text-gray-400">
-            <div>"Hey Jarvis, open Chrome"</div>
-            <div>"What's the weather today?"</div>
-            <div>"Play some music"</div>
-            <div>"Generate an image of..."</div>
-            <div>"Search for..."</div>
+        {/* Command Examples or Help */}
+        {showHelp ? (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="glass-effect rounded-xl p-4 w-full max-h-64 overflow-y-auto scrollbar-hide"
+          >
+            <h3 className="text-sm font-medium mb-3 flex items-center">
+              <Volume2 className="w-4 h-4 mr-2 text-jarvis-blue" />
+              Command Examples
+            </h3>
+            <div className="space-y-1 text-xs text-gray-400">
+              {commandExamples.slice(0, 12).map((example, index) => (
+                <div key={index} className="py-1 px-2 rounded bg-gray-800/30 hover:bg-gray-700/30 transition-colors">
+                  "{example}"
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 pt-3 border-t border-gray-600/30">
+              <p className="text-xs text-gray-500">
+                Try any of these commands or ask me anything naturally!
+              </p>
+            </div>
+          </motion.div>
+        ) : (
+          <div className="glass-effect rounded-xl p-4 w-full">
+            <h3 className="text-sm font-medium mb-3 flex items-center">
+              <Volume2 className="w-4 h-4 mr-2 text-jarvis-blue" />
+              Quick Commands
+            </h3>
+            <div className="space-y-2 text-xs text-gray-400">
+              <div>"Open Chrome"</div>
+              <div>"Scroll down"</div>
+              <div>"What's the time?"</div>
+              <div>"Search for restaurants"</div>
+              <div>"Help" - Show all commands</div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -2,6 +2,8 @@ import { useState, useCallback, useRef } from 'react';
 import { Message } from '../types';
 import { ttsEngine } from '../utils/textToSpeech';
 import { aiService } from '../services/aiProviders';
+import { EnhancedCommandProcessor } from '../utils/enhancedCommandProcessor';
+import { automationEngine } from '../utils/automationEngine';
 
 export const useJarvisState = () => {
   const [isListening, setIsListening] = useState(false);
@@ -11,7 +13,7 @@ export const useJarvisState = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'assistant',
-      content: 'Hello! I\'m JARVIS, your enhanced AI assistant. I\'m now powered by advanced AI models and ready to help you with any questions or tasks.',
+      content: 'Hello! I\'m JARVIS, your enhanced AI assistant with automation capabilities. I can help you open applications, control your browser, search the web, and much more. Try saying "Open Chrome" or "What can you do?" to get started.',
       timestamp: new Date()
     }
   ]);
@@ -115,12 +117,109 @@ export const useJarvisState = () => {
     setMessages(prev => [...prev, userMessage]);
 
     try {
-      // Use AI service to generate response
-      const aiResponse = await aiService.generateResponse(transcript);
+      // Parse the command using enhanced command processor
+      const voiceCommand = EnhancedCommandProcessor.parseCommand(transcript);
+      
+      if (!voiceCommand) {
+        throw new Error('Could not understand the command');
+      }
+
+      let response = '';
+
+      // Handle automation commands
+      const automationCommand = EnhancedCommandProcessor.convertToAutomationCommand(voiceCommand);
+      if (automationCommand) {
+        setCurrentStatus('Executing automation...');
+        const automationResult = await automationEngine.executeCommand(automationCommand);
+        
+        if (automationResult.success) {
+          response = automationResult.message;
+        } else {
+          response = `I couldn't complete that automation: ${automationResult.message}`;
+        }
+      } else {
+        // Handle special commands
+        switch (voiceCommand.command) {
+          case 'help':
+            response = EnhancedCommandProcessor.getAutomationHelp();
+            break;
+            
+          case 'greeting':
+            response = "Hello! I'm JARVIS, ready to assist you with automation and information. What would you like me to do?";
+            break;
+            
+          case 'farewell':
+            response = "Goodbye! It was a pleasure assisting you today.";
+            break;
+            
+          case 'thanks':
+            response = "You're welcome! I'm always here to help.";
+            break;
+            
+          case 'time':
+            const now = new Date();
+            response = `The current time is ${now.toLocaleTimeString()}.`;
+            break;
+            
+          case 'weather':
+            response = "I'd be happy to help with weather information, but I need access to a weather API. For now, I recommend checking your local weather app or website.";
+            break;
+            
+          case 'youtube':
+            const youtubeQuery = voiceCommand.parameters?.query;
+            if (youtubeQuery) {
+              const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(youtubeQuery)}`;
+              window.open(youtubeUrl, '_blank');
+              response = `Searching YouTube for "${youtubeQuery}"`;
+            } else {
+              response = "What would you like me to search for on YouTube?";
+            }
+            break;
+            
+          case 'google':
+            const googleQuery = voiceCommand.parameters?.query;
+            if (googleQuery) {
+              const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(googleQuery)}`;
+              window.open(googleUrl, '_blank');
+              response = `Searching Google for "${googleQuery}"`;
+            } else {
+              response = "What would you like me to search for on Google?";
+            }
+            break;
+            
+          case 'search':
+            const searchQuery = voiceCommand.parameters?.query;
+            if (searchQuery) {
+              const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+              window.open(searchUrl, '_blank');
+              response = `Searching for "${searchQuery}"`;
+            } else {
+              response = "What would you like me to search for?";
+            }
+            break;
+            
+          case 'generateImage':
+            const imagePrompt = voiceCommand.parameters?.prompt;
+            if (imagePrompt) {
+              response = `I understand you want to generate an image of "${imagePrompt}". Image generation would require integration with an AI image service like DALL-E, Midjourney, or Stable Diffusion.`;
+            } else {
+              response = "What kind of image would you like me to generate?";
+            }
+            break;
+            
+          case 'general':
+          default:
+            // Use AI service for general queries
+            setCurrentStatus('Thinking...');
+            const aiResponse = await aiService.generateResponse(transcript);
+            response = aiResponse.content;
+            break;
+        }
+      }
       
       const assistantMessage: Message = {
         type: 'assistant',
-        content: aiResponse.content,
+        content: response,
         timestamp: new Date()
       };
       
@@ -129,9 +228,9 @@ export const useJarvisState = () => {
       setCurrentStatus('Ready');
       
       // Speak the response
-      speakResponse(aiResponse.content);
+      speakResponse(response);
     } catch (error: any) {
-      console.error('AI Response Error:', error);
+      console.error('Command Processing Error:', error);
       
       const errorMessage: Message = {
         type: 'assistant',
@@ -160,12 +259,109 @@ export const useJarvisState = () => {
     setMessages(prev => [...prev, userMessage]);
 
     try {
-      // Use AI service to generate response
-      const aiResponse = await aiService.generateResponse(content);
+      // Parse the command using enhanced command processor
+      const voiceCommand = EnhancedCommandProcessor.parseCommand(content);
+      
+      if (!voiceCommand) {
+        throw new Error('Could not understand the command');
+      }
+
+      let response = '';
+
+      // Handle automation commands
+      const automationCommand = EnhancedCommandProcessor.convertToAutomationCommand(voiceCommand);
+      if (automationCommand) {
+        setCurrentStatus('Executing automation...');
+        const automationResult = await automationEngine.executeCommand(automationCommand);
+        
+        if (automationResult.success) {
+          response = automationResult.message;
+        } else {
+          response = `I couldn't complete that automation: ${automationResult.message}`;
+        }
+      } else {
+        // Handle special commands (same logic as processVoiceCommand)
+        switch (voiceCommand.command) {
+          case 'help':
+            response = EnhancedCommandProcessor.getAutomationHelp();
+            break;
+            
+          case 'greeting':
+            response = "Hello! I'm JARVIS, ready to assist you with automation and information. What would you like me to do?";
+            break;
+            
+          case 'farewell':
+            response = "Goodbye! It was a pleasure assisting you today.";
+            break;
+            
+          case 'thanks':
+            response = "You're welcome! I'm always here to help.";
+            break;
+            
+          case 'time':
+            const now = new Date();
+            response = `The current time is ${now.toLocaleTimeString()}.`;
+            break;
+            
+          case 'weather':
+            response = "I'd be happy to help with weather information, but I need access to a weather API. For now, I recommend checking your local weather app or website.";
+            break;
+            
+          case 'youtube':
+            const youtubeQuery = voiceCommand.parameters?.query;
+            if (youtubeQuery) {
+              const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(youtubeQuery)}`;
+              window.open(youtubeUrl, '_blank');
+              response = `Searching YouTube for "${youtubeQuery}"`;
+            } else {
+              response = "What would you like me to search for on YouTube?";
+            }
+            break;
+            
+          case 'google':
+            const googleQuery = voiceCommand.parameters?.query;
+            if (googleQuery) {
+              const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(googleQuery)}`;
+              window.open(googleUrl, '_blank');
+              response = `Searching Google for "${googleQuery}"`;
+            } else {
+              response = "What would you like me to search for on Google?";
+            }
+            break;
+            
+          case 'search':
+            const searchQuery = voiceCommand.parameters?.query;
+            if (searchQuery) {
+              const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
+              window.open(searchUrl, '_blank');
+              response = `Searching for "${searchQuery}"`;
+            } else {
+              response = "What would you like me to search for?";
+            }
+            break;
+            
+          case 'generateImage':
+            const imagePrompt = voiceCommand.parameters?.prompt;
+            if (imagePrompt) {
+              response = `I understand you want to generate an image of "${imagePrompt}". Image generation would require integration with an AI image service like DALL-E, Midjourney, or Stable Diffusion.`;
+            } else {
+              response = "What kind of image would you like me to generate?";
+            }
+            break;
+            
+          case 'general':
+          default:
+            // Use AI service for general queries
+            setCurrentStatus('Thinking...');
+            const aiResponse = await aiService.generateResponse(content);
+            response = aiResponse.content;
+            break;
+        }
+      }
       
       const assistantMessage: Message = {
         type: 'assistant',
-        content: aiResponse.content,
+        content: response,
         timestamp: new Date()
       };
       
@@ -174,9 +370,9 @@ export const useJarvisState = () => {
       setCurrentStatus('Ready');
       
       // Speak the response
-      speakResponse(aiResponse.content);
+      speakResponse(response);
     } catch (error: any) {
-      console.error('AI Response Error:', error);
+      console.error('Message Processing Error:', error);
       
       const errorMessage: Message = {
         type: 'assistant',
