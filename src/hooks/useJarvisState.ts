@@ -1,30 +1,33 @@
 import { useState, useCallback, useRef } from 'react';
 import { Message } from '../types';
-import { ttsEngine } from '../utils/textToSpeech';
+import { enhancedTtsEngine } from '../utils/enhancedTextToSpeech';
 import { aiService } from '../services/aiProviders';
-import { EnhancedCommandProcessor } from '../utils/enhancedCommandProcessor';
-import { automationEngine } from '../utils/automationEngine';
+import { AICommandProcessor } from '../utils/aiCommandProcessor';
+import { advancedAutomationEngine } from '../utils/advancedAutomationEngine';
 
 export const useJarvisState = () => {
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [currentStatus, setCurrentStatus] = useState('Ready');
+  const [currentVoiceProfile, setCurrentVoiceProfile] = useState('jarvis');
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'assistant',
-      content: 'Hello! I\'m JARVIS, your enhanced AI assistant with automation capabilities. I can help you open applications, control your browser, search the web, and much more. Try saying "Open Chrome" or "What can you do?" to get started.',
+      content: 'Hello! I\'m JARVIS, your advanced AI assistant with powerful automation capabilities. I can open applications, search multiple platforms, control your browser, and execute complex command chains. Try saying "Open Google and search AI news" or "Research machine learning" to see my advanced automation in action!',
       timestamp: new Date()
     }
   ]);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
-  const speakResponse = useCallback((text: string) => {
+  const speakResponse = useCallback((text: string, emotion?: 'neutral' | 'excited' | 'calm' | 'urgent') => {
     setIsSpeaking(true);
     setCurrentStatus('Speaking...');
     
-    ttsEngine.speak(text, {
+    enhancedTtsEngine.speak(text, {
+      profile: currentVoiceProfile,
+      emotion: emotion || 'neutral',
       onStart: () => {
         setIsSpeaking(true);
         setCurrentStatus('Speaking...');
@@ -34,19 +37,14 @@ export const useJarvisState = () => {
         setCurrentStatus('Ready');
       },
       onError: (error) => {
-        // Check if the error is just an interruption (expected behavior)
-        if (error.error === 'interrupted') {
-          // Log as info instead of error, or don't log at all since it's expected
-          console.info('TTS interrupted (expected behavior)');
-        } else {
-          // Log genuine errors
+        if (error.error !== 'interrupted') {
           console.error('TTS Error:', error);
         }
         setIsSpeaking(false);
         setCurrentStatus('Ready');
       }
     });
-  }, []);
+  }, [currentVoiceProfile]);
 
   const startListening = useCallback(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -60,8 +58,7 @@ export const useJarvisState = () => {
       recognition.onstart = () => {
         setIsListening(true);
         setCurrentStatus('Listening...');
-        // Stop any current speech when starting to listen
-        ttsEngine.stop();
+        enhancedTtsEngine.stop();
         setIsSpeaking(false);
       };
 
@@ -72,7 +69,7 @@ export const useJarvisState = () => {
           .join('');
 
         if (event.results[event.results.length - 1].isFinal) {
-          processVoiceCommand(transcript);
+          processAdvancedCommand(transcript);
         }
       };
 
@@ -103,11 +100,10 @@ export const useJarvisState = () => {
     setCurrentStatus('Ready');
   }, []);
 
-  const processVoiceCommand = useCallback(async (transcript: string) => {
+  const processAdvancedCommand = useCallback(async (transcript: string) => {
     setIsProcessing(true);
     setCurrentStatus('Processing...');
     
-    // Add user message
     const userMessage: Message = {
       type: 'user',
       content: transcript,
@@ -117,274 +113,129 @@ export const useJarvisState = () => {
     setMessages(prev => [...prev, userMessage]);
 
     try {
-      // Parse the command using enhanced command processor
-      const voiceCommand = EnhancedCommandProcessor.parseCommand(transcript);
-      
-      if (!voiceCommand) {
-        throw new Error('Could not understand the command');
+      // Check for voice profile changes
+      if (transcript.toLowerCase().includes('change voice to') || transcript.toLowerCase().includes('switch voice to')) {
+        const voiceMatch = transcript.match(/(?:change|switch)\s+voice\s+to\s+(\w+)/i);
+        if (voiceMatch) {
+          const requestedProfile = voiceMatch[1].toLowerCase();
+          const availableProfiles = enhancedTtsEngine.getAvailableProfiles();
+          const profile = availableProfiles.find(p => p.name.toLowerCase().includes(requestedProfile));
+          
+          if (profile) {
+            setCurrentVoiceProfile(requestedProfile);
+            enhancedTtsEngine.setVoiceProfile(requestedProfile);
+            const response = `Voice changed to ${profile.name} profile.`;
+            
+            const assistantMessage: Message = {
+              type: 'assistant',
+              content: response,
+              timestamp: new Date()
+            };
+            
+            setMessages(prev => [...prev, assistantMessage]);
+            setIsProcessing(false);
+            setCurrentStatus('Ready');
+            speakResponse(response);
+            return;
+          }
+        }
       }
 
-      let response = '';
-
-      // Handle automation commands
-      const automationCommand = EnhancedCommandProcessor.convertToAutomationCommand(voiceCommand);
-      if (automationCommand) {
-        setCurrentStatus('Executing automation...');
-        const automationResult = await automationEngine.executeCommand(automationCommand);
+      // Parse advanced automation command
+      const advancedCommand = AICommandProcessor.parseAdvancedCommand(transcript);
+      
+      if (advancedCommand) {
+        setCurrentStatus('Executing advanced automation...');
+        const automationResult = await advancedAutomationEngine.executeAdvancedCommand(advancedCommand);
+        
+        let response = '';
+        let emotion: 'neutral' | 'excited' | 'calm' | 'urgent' = 'neutral';
         
         if (automationResult.success) {
           response = automationResult.message;
+          emotion = 'excited';
+          
+          // Add contextual responses for different automation types
+          if (advancedCommand.type === 'openAndSearch') {
+            response += '. The search results should be loading now.';
+          } else if (advancedCommand.type === 'multiTab') {
+            response += '. All tabs have been opened for your research.';
+          } else if (advancedCommand.type === 'socialMedia') {
+            response += '. Your social media platforms are now accessible.';
+          }
         } else {
-          response = `I couldn't complete that automation: ${automationResult.message}`;
+          response = `I encountered an issue: ${automationResult.message}. Let me try a different approach.`;
+          emotion = 'calm';
         }
+        
+        const assistantMessage: Message = {
+          type: 'assistant',
+          content: response,
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, assistantMessage]);
+        setIsProcessing(false);
+        setCurrentStatus('Ready');
+        speakResponse(response, emotion);
       } else {
         // Handle special commands
-        switch (voiceCommand.command) {
-          case 'help':
-            response = EnhancedCommandProcessor.getAutomationHelp();
-            break;
-            
-          case 'greeting':
-            response = "Hello! I'm JARVIS, ready to assist you with automation and information. What would you like me to do?";
-            break;
-            
-          case 'farewell':
-            response = "Goodbye! It was a pleasure assisting you today.";
-            break;
-            
-          case 'thanks':
-            response = "You're welcome! I'm always here to help.";
-            break;
-            
-          case 'time':
-            const now = new Date();
-            response = `The current time is ${now.toLocaleTimeString()}.`;
-            break;
-            
-          case 'weather':
-            response = "I'd be happy to help with weather information, but I need access to a weather API. For now, I recommend checking your local weather app or website.";
-            break;
-            
-          case 'youtube':
-            const youtubeQuery = voiceCommand.parameters?.query;
-            if (youtubeQuery) {
-              const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(youtubeQuery)}`;
-              window.open(youtubeUrl, '_blank');
-              response = `Searching YouTube for "${youtubeQuery}"`;
-            } else {
-              response = "What would you like me to search for on YouTube?";
-            }
-            break;
-            
-          case 'google':
-            const googleQuery = voiceCommand.parameters?.query;
-            if (googleQuery) {
-              const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(googleQuery)}`;
-              window.open(googleUrl, '_blank');
-              response = `Searching Google for "${googleQuery}"`;
-            } else {
-              response = "What would you like me to search for on Google?";
-            }
-            break;
-            
-          case 'search':
-            const searchQuery = voiceCommand.parameters?.query;
-            if (searchQuery) {
-              const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
-              window.open(searchUrl, '_blank');
-              response = `Searching for "${searchQuery}"`;
-            } else {
-              response = "What would you like me to search for?";
-            }
-            break;
-            
-          case 'generateImage':
-            const imagePrompt = voiceCommand.parameters?.prompt;
-            if (imagePrompt) {
-              response = `I understand you want to generate an image of "${imagePrompt}". Image generation would require integration with an AI image service like DALL-E, Midjourney, or Stable Diffusion.`;
-            } else {
-              response = "What kind of image would you like me to generate?";
-            }
-            break;
-            
-          case 'general':
-          default:
-            // Use AI service for general queries
-            setCurrentStatus('Thinking...');
-            const aiResponse = await aiService.generateResponse(transcript);
-            response = aiResponse.content;
-            break;
+        if (transcript.toLowerCase().includes('help') || transcript.toLowerCase().includes('what can you do')) {
+          const helpResponse = AICommandProcessor.getAIAutomationHelp();
+          
+          const assistantMessage: Message = {
+            type: 'assistant',
+            content: helpResponse,
+            timestamp: new Date()
+          };
+          
+          setMessages(prev => [...prev, assistantMessage]);
+          setIsProcessing(false);
+          setCurrentStatus('Ready');
+          speakResponse('I can help you with advanced automation, web control, and intelligent command chaining. Check the chat for detailed examples.', 'excited');
+        } else {
+          // Use AI service for general queries
+          setCurrentStatus('Thinking...');
+          const aiResponse = await aiService.generateResponse(transcript);
+          
+          const assistantMessage: Message = {
+            type: 'assistant',
+            content: aiResponse.content,
+            timestamp: new Date()
+          };
+          
+          setMessages(prev => [...prev, assistantMessage]);
+          setIsProcessing(false);
+          setCurrentStatus('Ready');
+          speakResponse(aiResponse.content);
         }
       }
-      
-      const assistantMessage: Message = {
-        type: 'assistant',
-        content: response,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, assistantMessage]);
-      setIsProcessing(false);
-      setCurrentStatus('Ready');
-      
-      // Speak the response
-      speakResponse(response);
     } catch (error: any) {
-      console.error('Command Processing Error:', error);
+      console.error('Advanced Command Processing Error:', error);
       
       const errorMessage: Message = {
         type: 'assistant',
-        content: `I apologize, but I encountered an error while processing your request: ${error.message || 'Unknown error'}. Please try again.`,
+        content: `I apologize, but I encountered an error while processing your advanced request: ${error.message || 'Unknown error'}. Please try again with a different command.`,
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, errorMessage]);
       setIsProcessing(false);
       setCurrentStatus('Error occurred');
-      
-      speakResponse('I apologize, but I encountered an error. Please try again.');
+      speakResponse('I apologize for the error. Please try again.', 'calm');
     }
-  }, [speakResponse]);
+  }, [speakResponse, currentVoiceProfile]);
 
   const sendMessage = useCallback(async (content: string) => {
-    setIsProcessing(true);
-    setCurrentStatus('Processing...');
-    
-    const userMessage: Message = {
-      type: 'user',
-      content,
-      timestamp: new Date()
-    };
-    
-    setMessages(prev => [...prev, userMessage]);
+    await processAdvancedCommand(content);
+  }, [processAdvancedCommand]);
 
-    try {
-      // Parse the command using enhanced command processor
-      const voiceCommand = EnhancedCommandProcessor.parseCommand(content);
-      
-      if (!voiceCommand) {
-        throw new Error('Could not understand the command');
-      }
-
-      let response = '';
-
-      // Handle automation commands
-      const automationCommand = EnhancedCommandProcessor.convertToAutomationCommand(voiceCommand);
-      if (automationCommand) {
-        setCurrentStatus('Executing automation...');
-        const automationResult = await automationEngine.executeCommand(automationCommand);
-        
-        if (automationResult.success) {
-          response = automationResult.message;
-        } else {
-          response = `I couldn't complete that automation: ${automationResult.message}`;
-        }
-      } else {
-        // Handle special commands (same logic as processVoiceCommand)
-        switch (voiceCommand.command) {
-          case 'help':
-            response = EnhancedCommandProcessor.getAutomationHelp();
-            break;
-            
-          case 'greeting':
-            response = "Hello! I'm JARVIS, ready to assist you with automation and information. What would you like me to do?";
-            break;
-            
-          case 'farewell':
-            response = "Goodbye! It was a pleasure assisting you today.";
-            break;
-            
-          case 'thanks':
-            response = "You're welcome! I'm always here to help.";
-            break;
-            
-          case 'time':
-            const now = new Date();
-            response = `The current time is ${now.toLocaleTimeString()}.`;
-            break;
-            
-          case 'weather':
-            response = "I'd be happy to help with weather information, but I need access to a weather API. For now, I recommend checking your local weather app or website.";
-            break;
-            
-          case 'youtube':
-            const youtubeQuery = voiceCommand.parameters?.query;
-            if (youtubeQuery) {
-              const youtubeUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(youtubeQuery)}`;
-              window.open(youtubeUrl, '_blank');
-              response = `Searching YouTube for "${youtubeQuery}"`;
-            } else {
-              response = "What would you like me to search for on YouTube?";
-            }
-            break;
-            
-          case 'google':
-            const googleQuery = voiceCommand.parameters?.query;
-            if (googleQuery) {
-              const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(googleQuery)}`;
-              window.open(googleUrl, '_blank');
-              response = `Searching Google for "${googleQuery}"`;
-            } else {
-              response = "What would you like me to search for on Google?";
-            }
-            break;
-            
-          case 'search':
-            const searchQuery = voiceCommand.parameters?.query;
-            if (searchQuery) {
-              const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`;
-              window.open(searchUrl, '_blank');
-              response = `Searching for "${searchQuery}"`;
-            } else {
-              response = "What would you like me to search for?";
-            }
-            break;
-            
-          case 'generateImage':
-            const imagePrompt = voiceCommand.parameters?.prompt;
-            if (imagePrompt) {
-              response = `I understand you want to generate an image of "${imagePrompt}". Image generation would require integration with an AI image service like DALL-E, Midjourney, or Stable Diffusion.`;
-            } else {
-              response = "What kind of image would you like me to generate?";
-            }
-            break;
-            
-          case 'general':
-          default:
-            // Use AI service for general queries
-            setCurrentStatus('Thinking...');
-            const aiResponse = await aiService.generateResponse(content);
-            response = aiResponse.content;
-            break;
-        }
-      }
-      
-      const assistantMessage: Message = {
-        type: 'assistant',
-        content: response,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, assistantMessage]);
-      setIsProcessing(false);
-      setCurrentStatus('Ready');
-      
-      // Speak the response
-      speakResponse(response);
-    } catch (error: any) {
-      console.error('Message Processing Error:', error);
-      
-      const errorMessage: Message = {
-        type: 'assistant',
-        content: `I apologize, but I encountered an error while processing your request: ${error.message || 'Unknown error'}. Please try again.`,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, errorMessage]);
-      setIsProcessing(false);
-      setCurrentStatus('Error occurred');
-      
-      speakResponse('I apologize, but I encountered an error. Please try again.');
+  const changeVoiceProfile = useCallback((profileName: string) => {
+    const success = enhancedTtsEngine.setVoiceProfile(profileName);
+    if (success) {
+      setCurrentVoiceProfile(profileName);
+      const profile = enhancedTtsEngine.getCurrentProfile();
+      speakResponse(`Voice changed to ${profile.name} profile.`);
     }
   }, [speakResponse]);
 
@@ -393,10 +244,13 @@ export const useJarvisState = () => {
     isProcessing,
     isSpeaking,
     currentStatus,
+    currentVoiceProfile,
     messages,
     startListening,
     stopListening,
     sendMessage,
-    speakResponse
+    speakResponse,
+    changeVoiceProfile,
+    availableVoiceProfiles: enhancedTtsEngine.getAvailableProfiles()
   };
 };

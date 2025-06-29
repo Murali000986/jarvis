@@ -5,7 +5,6 @@ import VoiceVisualizer from './components/VoiceVisualizer';
 import StatusBar from './components/StatusBar';
 import WelcomeScreen from './components/WelcomeScreen';
 import { useJarvisState } from './hooks/useJarvisState';
-import { ttsEngine } from './utils/textToSpeech';
 
 function App() {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -14,11 +13,13 @@ function App() {
     isProcessing, 
     isSpeaking,
     currentStatus, 
+    currentVoiceProfile,
     messages, 
     startListening, 
     stopListening,
     sendMessage,
-    speakResponse
+    speakResponse,
+    changeVoiceProfile
   } = useJarvisState();
 
   useEffect(() => {
@@ -26,7 +27,7 @@ function App() {
       setShowWelcome(false);
       // Speak welcome message after the welcome screen
       setTimeout(() => {
-        speakResponse("Welcome to JARVIS, your enhanced AI assistant. I'm ready to help you with voice and text commands.");
+        speakResponse("Welcome to JARVIS version 4.0, your advanced AI assistant with powerful automation capabilities. I can now execute complex command chains, control multiple applications, and understand natural language commands. Try saying 'Open Google and search AI news' or 'Research machine learning' to experience my enhanced automation features.", 'excited');
       }, 1000);
     }, 3000);
 
@@ -35,8 +36,9 @@ function App() {
 
   return (
     <div className="h-screen w-screen bg-gradient-to-br from-jarvis-dark via-gray-900 to-black overflow-hidden relative">
-      {/* Background Effects */}
+      {/* Enhanced Background Effects */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-jarvis-blue/5 via-transparent to-transparent"></div>
+      <div className="absolute inset-0 bg-[conic-gradient(from_0deg_at_50%_50%,_transparent_0deg,_rgba(0,212,255,0.03)_60deg,_transparent_120deg)] animate-spin" style={{ animationDuration: '60s' }}></div>
       
       <AnimatePresence mode="wait">
         {showWelcome ? (
@@ -49,12 +51,14 @@ function App() {
             transition={{ duration: 0.8 }}
             className="h-full flex flex-col"
           >
-            {/* Status Bar */}
+            {/* Enhanced Status Bar */}
             <StatusBar 
               status={currentStatus}
               isListening={isListening}
               isProcessing={isProcessing}
               isSpeaking={isSpeaking}
+              currentVoiceProfile={currentVoiceProfile}
+              onVoiceProfileChange={changeVoiceProfile}
             />
 
             {/* Main Content */}
@@ -69,7 +73,7 @@ function App() {
                 />
               </div>
 
-              {/* Voice Visualizer Sidebar */}
+              {/* Enhanced Voice Visualizer Sidebar */}
               <div className="w-80 border-l border-white/10 glass-effect">
                 <VoiceVisualizer 
                   isListening={isListening}

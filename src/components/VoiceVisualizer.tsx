@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mic, MicOff, Volume2, Settings, HelpCircle } from 'lucide-react';
-import { EnhancedCommandProcessor } from '../utils/enhancedCommandProcessor';
+import { Mic, MicOff, Volume2, Settings, HelpCircle, Zap, Bot } from 'lucide-react';
+import { AICommandProcessor } from '../utils/aiCommandProcessor';
 
 interface VoiceVisualizerProps {
   isListening: boolean;
@@ -16,6 +16,7 @@ const VoiceVisualizer: React.FC<VoiceVisualizerProps> = ({
 }) => {
   const [audioLevels, setAudioLevels] = useState<number[]>(new Array(20).fill(0));
   const [showHelp, setShowHelp] = useState(false);
+  const [showAdvancedExamples, setShowAdvancedExamples] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -35,24 +36,51 @@ const VoiceVisualizer: React.FC<VoiceVisualizerProps> = ({
     };
   }, [isListening]);
 
-  const commandExamples = EnhancedCommandProcessor.getCommandExamples();
+  const basicExamples = [
+    "Open Chrome",
+    "Scroll down",
+    "What's the time?",
+    "Search for restaurants",
+    "Help"
+  ];
+
+  const advancedExamples = AICommandProcessor.getAdvancedCommandExamples();
 
   return (
     <div className="h-full flex flex-col p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-xl font-semibold">Voice Control</h2>
+        <h2 className="text-xl font-semibold flex items-center">
+          <Bot className="w-6 h-6 mr-2 text-jarvis-blue" />
+          AI Voice Control
+        </h2>
         <div className="flex space-x-2">
+          <motion.button
+            onClick={() => setShowAdvancedExamples(!showAdvancedExamples)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={`p-2 rounded-lg border transition-all duration-200 ${
+              showAdvancedExamples 
+                ? 'bg-jarvis-blue/20 text-jarvis-blue border-jarvis-blue/30' 
+                : 'bg-gray-600/20 text-gray-400 border-gray-600/30 hover:text-jarvis-blue hover:border-jarvis-blue/30'
+            }`}
+            title="Show advanced automation examples"
+          >
+            <Zap className="w-4 h-4" />
+          </motion.button>
           <motion.button
             onClick={() => setShowHelp(!showHelp)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="p-2 rounded-lg bg-gray-600/20 text-gray-400 border border-gray-600/30 hover:text-jarvis-blue hover:border-jarvis-blue/30 transition-all duration-200"
-            title="Show command examples"
+            className={`p-2 rounded-lg border transition-all duration-200 ${
+              showHelp 
+                ? 'bg-jarvis-blue/20 text-jarvis-blue border-jarvis-blue/30' 
+                : 'bg-gray-600/20 text-gray-400 border-gray-600/30 hover:text-jarvis-blue hover:border-jarvis-blue/30'
+            }`}
+            title="Show basic command examples"
           >
             <HelpCircle className="w-4 h-4" />
           </motion.button>
-          <Settings className="w-5 h-5 text-gray-400 cursor-pointer hover:text-jarvis-blue transition-colors" />
         </div>
       </div>
 
@@ -97,18 +125,42 @@ const VoiceVisualizer: React.FC<VoiceVisualizerProps> = ({
         {/* Status Text */}
         <div className="text-center">
           <p className="text-lg font-medium mb-2">
-            {isListening ? 'Listening...' : isProcessing ? 'Processing...' : 'Ready'}
+            {isListening ? 'Listening...' : isProcessing ? 'Processing...' : 'Ready for AI Commands'}
           </p>
           <p className="text-sm text-gray-400">
             {isListening 
-              ? 'Speak now or click to stop' 
-              : 'Click the microphone to start voice input'
+              ? 'Speak your advanced automation command' 
+              : 'Click the microphone to start AI-powered voice control'
             }
           </p>
         </div>
 
-        {/* Command Examples or Help */}
-        {showHelp ? (
+        {/* Command Examples */}
+        {showAdvancedExamples ? (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="glass-effect rounded-xl p-4 w-full max-h-64 overflow-y-auto scrollbar-hide"
+          >
+            <h3 className="text-sm font-medium mb-3 flex items-center">
+              <Zap className="w-4 h-4 mr-2 text-jarvis-blue" />
+              Advanced AI Automation
+            </h3>
+            <div className="space-y-1 text-xs text-gray-400">
+              {advancedExamples.slice(0, 16).map((example, index) => (
+                <div key={index} className="py-1 px-2 rounded bg-gray-800/30 hover:bg-gray-700/30 transition-colors">
+                  "{example}"
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 pt-3 border-t border-gray-600/30">
+              <p className="text-xs text-gray-500">
+                🤖 AI-powered automation with intelligent command chaining and context understanding!
+              </p>
+            </div>
+          </motion.div>
+        ) : showHelp ? (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -117,10 +169,10 @@ const VoiceVisualizer: React.FC<VoiceVisualizerProps> = ({
           >
             <h3 className="text-sm font-medium mb-3 flex items-center">
               <Volume2 className="w-4 h-4 mr-2 text-jarvis-blue" />
-              Command Examples
+              Basic Commands
             </h3>
             <div className="space-y-1 text-xs text-gray-400">
-              {commandExamples.slice(0, 12).map((example, index) => (
+              {basicExamples.map((example, index) => (
                 <div key={index} className="py-1 px-2 rounded bg-gray-800/30 hover:bg-gray-700/30 transition-colors">
                   "{example}"
                 </div>
@@ -128,22 +180,22 @@ const VoiceVisualizer: React.FC<VoiceVisualizerProps> = ({
             </div>
             <div className="mt-3 pt-3 border-t border-gray-600/30">
               <p className="text-xs text-gray-500">
-                Try any of these commands or ask me anything naturally!
+                💡 Click the ⚡ button to see advanced AI automation commands!
               </p>
             </div>
           </motion.div>
         ) : (
           <div className="glass-effect rounded-xl p-4 w-full">
             <h3 className="text-sm font-medium mb-3 flex items-center">
-              <Volume2 className="w-4 h-4 mr-2 text-jarvis-blue" />
-              Quick Commands
+              <Bot className="w-4 h-4 mr-2 text-jarvis-blue" />
+              AI-Powered Quick Commands
             </h3>
             <div className="space-y-2 text-xs text-gray-400">
-              <div>"Open Chrome"</div>
-              <div>"Scroll down"</div>
-              <div>"What's the time?"</div>
-              <div>"Search for restaurants"</div>
-              <div>"Help" - Show all commands</div>
+              <div>"Open Google and search AI news"</div>
+              <div>"Research machine learning"</div>
+              <div>"Play relaxing music"</div>
+              <div>"Open my workspace"</div>
+              <div>"Change voice to ChatGPT"</div>
             </div>
           </div>
         )}

@@ -2,19 +2,24 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Activity, Wifi, Battery, Clock, Volume2 } from 'lucide-react';
 import VoiceControls from './VoiceControls';
+import VoiceProfileSelector from './VoiceProfileSelector';
 
 interface StatusBarProps {
   status: string;
   isListening: boolean;
   isProcessing: boolean;
   isSpeaking?: boolean;
+  currentVoiceProfile?: string;
+  onVoiceProfileChange?: (profile: string) => void;
 }
 
 const StatusBar: React.FC<StatusBarProps> = ({ 
   status, 
   isListening, 
   isProcessing, 
-  isSpeaking = false 
+  isSpeaking = false,
+  currentVoiceProfile = 'jarvis',
+  onVoiceProfileChange
 }) => {
   const [currentTime, setCurrentTime] = React.useState(new Date());
 
@@ -57,12 +62,20 @@ const StatusBar: React.FC<StatusBarProps> = ({
           <div className="h-4 w-px bg-white/20"></div>
           
           <div className="text-sm text-gray-400">
-            JARVIS AI System v3.0
+            JARVIS AI System v4.0 - Advanced Automation
           </div>
         </div>
 
-        {/* Right Side - System Info & Voice Controls */}
+        {/* Right Side - Controls & System Info */}
         <div className="flex items-center space-x-6">
+          {/* Voice Profile Selector */}
+          {onVoiceProfileChange && (
+            <VoiceProfileSelector
+              currentProfile={currentVoiceProfile}
+              onProfileChange={onVoiceProfileChange}
+            />
+          )}
+          
           <VoiceControls />
           
           <div className="flex items-center space-x-2 text-sm text-gray-400">
