@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { Message } from '../types';
 import { ttsEngine } from '../utils/textToSpeech';
+import { aiService } from '../services/aiProviders';
 
 export const useJarvisState = () => {
   const [isListening, setIsListening] = useState(false);
@@ -10,7 +11,7 @@ export const useJarvisState = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'assistant',
-      content: 'Hello! I\'m JARVIS, your enhanced AI assistant. How can I help you today?',
+      content: 'Hello! I\'m JARVIS, your enhanced AI assistant. I\'m now powered by advanced AI models and ready to help you with any questions or tasks.',
       timestamp: new Date()
     }
   ]);
@@ -106,21 +107,37 @@ export const useJarvisState = () => {
     
     setMessages(prev => [...prev, userMessage]);
 
-    // Simulate AI processing
-    setTimeout(() => {
-      const response = generateResponse(transcript);
+    try {
+      // Use AI service to generate response
+      const aiResponse = await aiService.generateResponse(transcript);
+      
       const assistantMessage: Message = {
         type: 'assistant',
-        content: response,
+        content: aiResponse.content,
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, assistantMessage]);
       setIsProcessing(false);
+      setCurrentStatus('Ready');
       
       // Speak the response
-      speakResponse(response);
-    }, 1500);
+      speakResponse(aiResponse.content);
+    } catch (error: any) {
+      console.error('AI Response Error:', error);
+      
+      const errorMessage: Message = {
+        type: 'assistant',
+        content: `I apologize, but I encountered an error while processing your request: ${error.message || 'Unknown error'}. Please try again.`,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+      setIsProcessing(false);
+      setCurrentStatus('Error occurred');
+      
+      speakResponse('I apologize, but I encountered an error. Please try again.');
+    }
   }, [speakResponse]);
 
   const sendMessage = useCallback(async (content: string) => {
@@ -135,68 +152,38 @@ export const useJarvisState = () => {
     
     setMessages(prev => [...prev, userMessage]);
 
-    // Simulate AI processing
-    setTimeout(() => {
-      const response = generateResponse(content);
+    try {
+      // Use AI service to generate response
+      const aiResponse = await aiService.generateResponse(content);
+      
       const assistantMessage: Message = {
         type: 'assistant',
-        content: response,
+        content: aiResponse.content,
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, assistantMessage]);
       setIsProcessing(false);
+      setCurrentStatus('Ready');
       
       // Speak the response
-      speakResponse(response);
-    }, 1500);
+      speakResponse(aiResponse.content);
+    } catch (error: any) {
+      console.error('AI Response Error:', error);
+      
+      const errorMessage: Message = {
+        type: 'assistant',
+        content: `I apologize, but I encountered an error while processing your request: ${error.message || 'Unknown error'}. Please try again.`,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+      setIsProcessing(false);
+      setCurrentStatus('Error occurred');
+      
+      speakResponse('I apologize, but I encountered an error. Please try again.');
+    }
   }, [speakResponse]);
-
-  const generateResponse = (input: string): string => {
-    const lowerInput = input.toLowerCase();
-    
-    if (lowerInput.includes('hello') || lowerInput.includes('hi')) {
-      return 'Hello! How can I assist you today?';
-    }
-    
-    if (lowerInput.includes('weather')) {
-      return 'I\'d be happy to help with weather information. However, I need access to weather APIs to provide real-time data. For now, I recommend checking your local weather service.';
-    }
-    
-    if (lowerInput.includes('time')) {
-      return `The current time is ${new Date().toLocaleTimeString()}.`;
-    }
-    
-    if (lowerInput.includes('open')) {
-      const app = lowerInput.replace('open', '').trim();
-      return `I would open ${app} for you. This feature requires integration with your system's application launcher.`;
-    }
-    
-    if (lowerInput.includes('play')) {
-      const query = lowerInput.replace('play', '').trim();
-      return `I would play ${query} for you. This feature requires integration with music services.`;
-    }
-    
-    if (lowerInput.includes('search')) {
-      const query = lowerInput.replace('search', '').trim();
-      return `I would search for "${query}" for you. This feature requires integration with search engines.`;
-    }
-    
-    if (lowerInput.includes('generate image')) {
-      const prompt = lowerInput.replace('generate image', '').trim();
-      return `I would generate an image of ${prompt} for you. This feature requires integration with image generation APIs.`;
-    }
-
-    if (lowerInput.includes('who are you') || lowerInput.includes('what are you')) {
-      return 'I am JARVIS, Just A Rather Very Intelligent System. I\'m your enhanced AI assistant, designed to help you with various tasks through voice and text interaction.';
-    }
-
-    if (lowerInput.includes('thank you') || lowerInput.includes('thanks')) {
-      return 'You\'re welcome! I\'m always here to help. Is there anything else you need assistance with?';
-    }
-    
-    return 'I understand your request. This enhanced JARVIS interface is ready for integration with your existing backend services to provide full functionality.';
-  };
 
   return {
     isListening,
