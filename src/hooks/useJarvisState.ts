@@ -1,15 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Message } from '../types/index';
 
 // Voice profiles for different interaction modes
 export type VoiceProfile = 'authoritative' | 'friendly' | 'professional' | 'casual';
-
-export interface Message {
-  id: string;
-  text: string;
-  sender: 'user' | 'jarvis';
-  timestamp: Date;
-  type?: 'text' | 'command' | 'response';
-}
 
 export interface JarvisState {
   isListening: boolean;
@@ -69,7 +62,7 @@ export const useJarvisState = (): JarvisState => {
   const sendMessage = useCallback((messageText: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: messageText,
+      content: messageText,
       sender: 'user',
       timestamp: new Date(),
       type: 'text'
@@ -93,7 +86,7 @@ export const useJarvisState = (): JarvisState => {
       
       const jarvisMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: randomResponse,
+        content: randomResponse,
         sender: 'jarvis',
         timestamp: new Date(),
         type: 'response'
@@ -188,14 +181,14 @@ export const useJarvisState = (): JarvisState => {
       const mockMessages: Message[] = [
         {
           id: '1',
-          text: 'Hello JARVIS, how are you today?',
+          content: 'Hello JARVIS, how are you today?',
           sender: 'user',
           timestamp: new Date(Date.now() - 3600000),
           type: 'text'
         },
         {
           id: '2',
-          text: 'Good day. I am functioning optimally and ready to assist you.',
+          content: 'Good day. I am functioning optimally and ready to assist you.',
           sender: 'jarvis',
           timestamp: new Date(Date.now() - 3590000),
           type: 'response'
