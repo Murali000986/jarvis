@@ -1,18 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, User, Bot } from 'lucide-react';
+import { Send, User, Bot, Volume2, VolumeX } from 'lucide-react';
 import { Message } from '../types';
+import { ttsEngine } from '../utils/textToSpeech';
 
 interface ChatInterfaceProps {
   messages: Message[];
   onSendMessage: (message: string) => void;
   isProcessing: boolean;
+  isSpeaking?: boolean;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ 
   messages, 
   onSendMessage, 
-  isProcessing 
+  isProcessing,
+  isSpeaking = false
 }) => {
   const [inputValue, setInputValue] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -38,6 +41,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
+    }
+  };
+
+  const handleSpeakMessage = (content: string) => {
+    if (ttsEngine.isSpeaking()) {
+      ttsEngine.stop();
+    } else {
+      ttsEngine.speak(content);
     }
   };
 
@@ -72,15 +83,34 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 </div>
 
                 {/* Message Bubble */}
-                <div className={`glass-effect rounded-2xl px-4 py-3 ${
+                <div className={`glass-effect rounded-2xl px-4 py-3 relative group ${
                   message.type === 'user' 
                     ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-blue-500/30' 
                     : 'bg-gradient-to-r from-jarvis-blue/20 to-cyan-400/20 border-jarvis-blue/30'
                 }`}>
                   <p className="text-sm leading-relaxed">{message.content}</p>
-                  <span className="text-xs text-gray-400 mt-1 block">
-                    {message.timestamp.toLocaleTimeString()}
-                  </span>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-xs text-gray-400">
+                      {message.timestamp.toLocaleTimeString()}
+                    </span>
+                    
+                    {/* Voice Control for Assistant Messages */}
+                    {message.type === 'assistant' && (
+                      <motion.button
+                        onClick={() => handleSpeakMessage(message.content)}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded-full hover:bg-jarvis-blue/20"
+                        title={ttsEngine.isSpeaking() ? 'Stop speaking' : 'Speak message'}
+                      >
+                        {ttsEngine.isSpeaking() ? (
+                          <VolumeX className="w-3 h-3 text-jarvis-blue" />
+                        ) : (
+                          <Volume2 className="w-3 h-3 text-jarvis-blue" />
+                        )}
+                      </motion.button>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -103,6 +133,43 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                   <div className="typing-indicator"></div>
                   <div className="typing-indicator"></div>
                   <div className="typing-indicator"></div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Speaking Indicator */}
+        {isSpeaking && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex justify-start"
+          >
+            <div className="flex items-start space-x-3 max-w-3xl">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-r from-jarvis-blue to-cyan-400 flex items-center justify-center">
+                <Volume2 className="w-5 h-5 text-white animate-pulse" />
+              </div>
+              <div className="glass-effect rounded-2xl px-4 py-3 bg-gradient-to-r from-jarvis-blue/20 to-cyan-400/20 border-jarvis-blue/30">
+                <div className="flex items-center space-x-2">
+                  <div className="flex space-x-1">
+                    {[...Array(5)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="w-1 h-4 bg-jarvis-blue rounded-full"
+                        animate={{
+                          scaleY: [1, 2, 1],
+                          opacity: [0.5, 1, 0.5]
+                        }}
+                        transition={{
+                          duration: 0.8,
+                          repeat: Infinity,
+                          delay: i * 0.1
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs text-jarvis-blue">Speaking...</span>
                 </div>
               </div>
             </div>

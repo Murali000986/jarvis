@@ -1,14 +1,21 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Activity, Wifi, Battery, Clock } from 'lucide-react';
+import { Activity, Wifi, Battery, Clock, Volume2 } from 'lucide-react';
+import VoiceControls from './VoiceControls';
 
 interface StatusBarProps {
   status: string;
   isListening: boolean;
   isProcessing: boolean;
+  isSpeaking?: boolean;
 }
 
-const StatusBar: React.FC<StatusBarProps> = ({ status, isListening, isProcessing }) => {
+const StatusBar: React.FC<StatusBarProps> = ({ 
+  status, 
+  isListening, 
+  isProcessing, 
+  isSpeaking = false 
+}) => {
   const [currentTime, setCurrentTime] = React.useState(new Date());
 
   React.useEffect(() => {
@@ -20,12 +27,14 @@ const StatusBar: React.FC<StatusBarProps> = ({ status, isListening, isProcessing
   }, []);
 
   const getStatusColor = () => {
+    if (isSpeaking) return 'text-green-400';
     if (isProcessing) return 'text-yellow-400';
-    if (isListening) return 'text-green-400';
+    if (isListening) return 'text-blue-400';
     return 'text-jarvis-blue';
   };
 
   const getStatusIcon = () => {
+    if (isSpeaking) return <Volume2 className="w-4 h-4 animate-pulse" />;
     if (isProcessing) return <Activity className="w-4 h-4 animate-pulse" />;
     if (isListening) return <Activity className="w-4 h-4 animate-bounce" />;
     return <Activity className="w-4 h-4" />;
@@ -52,8 +61,10 @@ const StatusBar: React.FC<StatusBarProps> = ({ status, isListening, isProcessing
           </div>
         </div>
 
-        {/* Right Side - System Info */}
+        {/* Right Side - System Info & Voice Controls */}
         <div className="flex items-center space-x-6">
+          <VoiceControls />
+          
           <div className="flex items-center space-x-2 text-sm text-gray-400">
             <Wifi className="w-4 h-4 text-green-400" />
             <span>Connected</span>

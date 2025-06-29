@@ -1,9 +1,11 @@
 import { useState, useCallback, useRef } from 'react';
 import { Message } from '../types';
+import { ttsEngine } from '../utils/textToSpeech';
 
 export const useJarvisState = () => {
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [currentStatus, setCurrentStatus] = useState('Ready');
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -14,6 +16,27 @@ export const useJarvisState = () => {
   ]);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  const speakResponse = useCallback((text: string) => {
+    setIsSpeaking(true);
+    setCurrentStatus('Speaking...');
+    
+    ttsEngine.speak(text, {
+      onStart: () => {
+        setIsSpeaking(true);
+        setCurrentStatus('Speaking...');
+      },
+      onEnd: () => {
+        setIsSpeaking(false);
+        setCurrentStatus('Ready');
+      },
+      onError: (error) => {
+        console.error('TTS Error:', error);
+        setIsSpeaking(false);
+        setCurrentStatus('Ready');
+      }
+    });
+  }, []);
 
   const startListening = useCallback(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -27,6 +50,9 @@ export const useJarvisState = () => {
       recognition.onstart = () => {
         setIsListening(true);
         setCurrentStatus('Listening...');
+        // Stop any current speech when starting to listen
+        ttsEngine.stop();
+        setIsSpeaking(false);
       };
 
       recognition.onresult = (event) => {
@@ -91,9 +117,11 @@ export const useJarvisState = () => {
       
       setMessages(prev => [...prev, assistantMessage]);
       setIsProcessing(false);
-      setCurrentStatus('Ready');
+      
+      // Speak the response
+      speakResponse(response);
     }, 1500);
-  }, []);
+  }, [speakResponse]);
 
   const sendMessage = useCallback(async (content: string) => {
     setIsProcessing(true);
@@ -118,9 +146,11 @@ export const useJarvisState = () => {
       
       setMessages(prev => [...prev, assistantMessage]);
       setIsProcessing(false);
-      setCurrentStatus('Ready');
+      
+      // Speak the response
+      speakResponse(response);
     }, 1500);
-  }, []);
+  }, [speakResponse]);
 
   const generateResponse = (input: string): string => {
     const lowerInput = input.toLowerCase();
@@ -156,6 +186,14 @@ export const useJarvisState = () => {
       const prompt = lowerInput.replace('generate image', '').trim();
       return `I would generate an image of ${prompt} for you. This feature requires integration with image generation APIs.`;
     }
+
+    if (lowerInput.includes('who are you') || lowerInput.includes('what are you')) {
+      return 'I am JARVIS, Just A Rather Very Intelligent System. I\'m your enhanced AI assistant, designed to help you with various tasks through voice and text interaction.';
+    }
+
+    if (lowerInput.includes('thank you') || lowerInput.includes('thanks')) {
+      return 'You\'re welcome! I\'m always here to help. Is there anything else you need assistance with?';
+    }
     
     return 'I understand your request. This enhanced JARVIS interface is ready for integration with your existing backend services to provide full functionality.';
   };
@@ -163,10 +201,12 @@ export const useJarvisState = () => {
   return {
     isListening,
     isProcessing,
+    isSpeaking,
     currentStatus,
     messages,
     startListening,
     stopListening,
-    sendMessage
+    sendMessage,
+    speakResponse
   };
 };

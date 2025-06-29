@@ -5,26 +5,33 @@ import VoiceVisualizer from './components/VoiceVisualizer';
 import StatusBar from './components/StatusBar';
 import WelcomeScreen from './components/WelcomeScreen';
 import { useJarvisState } from './hooks/useJarvisState';
+import { ttsEngine } from './utils/textToSpeech';
 
 function App() {
   const [showWelcome, setShowWelcome] = useState(true);
   const { 
     isListening, 
     isProcessing, 
+    isSpeaking,
     currentStatus, 
     messages, 
     startListening, 
     stopListening,
-    sendMessage 
+    sendMessage,
+    speakResponse
   } = useJarvisState();
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowWelcome(false);
+      // Speak welcome message after the welcome screen
+      setTimeout(() => {
+        speakResponse("Welcome to JARVIS, your enhanced AI assistant. I'm ready to help you with voice and text commands.");
+      }, 1000);
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [speakResponse]);
 
   return (
     <div className="h-screen w-screen bg-gradient-to-br from-jarvis-dark via-gray-900 to-black overflow-hidden relative">
@@ -47,6 +54,7 @@ function App() {
               status={currentStatus}
               isListening={isListening}
               isProcessing={isProcessing}
+              isSpeaking={isSpeaking}
             />
 
             {/* Main Content */}
@@ -57,6 +65,7 @@ function App() {
                   messages={messages}
                   onSendMessage={sendMessage}
                   isProcessing={isProcessing}
+                  isSpeaking={isSpeaking}
                 />
               </div>
 
