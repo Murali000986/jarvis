@@ -32,7 +32,14 @@ export const useJarvisState = () => {
         setCurrentStatus('Ready');
       },
       onError: (error) => {
-        console.error('TTS Error:', error);
+        // Check if the error is just an interruption (expected behavior)
+        if (error.error === 'interrupted') {
+          // Log as info instead of error, or don't log at all since it's expected
+          console.info('TTS interrupted (expected behavior)');
+        } else {
+          // Log genuine errors
+          console.error('TTS Error:', error);
+        }
         setIsSpeaking(false);
         setCurrentStatus('Ready');
       }
