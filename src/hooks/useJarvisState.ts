@@ -14,20 +14,23 @@ export const useJarvisState = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'assistant',
-      content: 'Hello! I\'m JARVIS, your advanced AI assistant with powerful automation capabilities. I can open applications, search multiple platforms, control your browser, and execute complex command chains. Try saying "Open Google and search AI news" or "Research machine learning" to see my advanced automation in action!',
+      content: 'Good day. I am JARVIS, your advanced artificial intelligence assistant with sophisticated automation capabilities. I can execute complex command sequences, control multiple applications simultaneously, and provide intelligent responses with my authentic voice system. Try saying "Open Google and search AI news" or "Research machine learning" to experience my enhanced automation features.',
       timestamp: new Date()
     }
   ]);
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
-  const speakResponse = useCallback((text: string, emotion?: 'neutral' | 'excited' | 'calm' | 'urgent') => {
+  const speakResponse = useCallback((text: string, emotion?: 'neutral' | 'excited' | 'calm' | 'urgent' | 'authoritative') => {
     setIsSpeaking(true);
     setCurrentStatus('Speaking...');
     
+    // Use authoritative emotion for JARVIS by default
+    const jarvisEmotion = currentVoiceProfile.includes('jarvis') ? 'authoritative' : (emotion || 'neutral');
+    
     enhancedTtsEngine.speak(text, {
       profile: currentVoiceProfile,
-      emotion: emotion || 'neutral',
+      emotion: jarvisEmotion,
       onStart: () => {
         setIsSpeaking(true);
         setCurrentStatus('Speaking...');
@@ -113,18 +116,25 @@ export const useJarvisState = () => {
     setMessages(prev => [...prev, userMessage]);
 
     try {
-      // Check for voice profile changes
-      if (transcript.toLowerCase().includes('change voice to') || transcript.toLowerCase().includes('switch voice to')) {
-        const voiceMatch = transcript.match(/(?:change|switch)\s+voice\s+to\s+(\w+)/i);
-        if (voiceMatch) {
-          const requestedProfile = voiceMatch[1].toLowerCase();
-          const availableProfiles = enhancedTtsEngine.getAvailableProfiles();
-          const profile = availableProfiles.find(p => p.name.toLowerCase().includes(requestedProfile));
-          
-          if (profile) {
-            setCurrentVoiceProfile(requestedProfile);
-            enhancedTtsEngine.setVoiceProfile(requestedProfile);
-            const response = `Voice changed to ${profile.name} profile.`;
+      // Check for voice profile changes with enhanced JARVIS detection
+      const lowerTranscript = transcript.toLowerCase();
+      if (lowerTranscript.includes('change voice') || lowerTranscript.includes('switch voice') || lowerTranscript.includes('use voice')) {
+        const voicePatterns = [
+          { pattern: /(?:change|switch|use)\s+voice\s+to\s+jarvis(?:\s+mark\s+(?:2|ii|two))?/i, profile: 'jarvis-mk2' },
+          { pattern: /(?:change|switch|use)\s+voice\s+to\s+jarvis/i, profile: 'jarvis' },
+          { pattern: /(?:change|switch|use)\s+voice\s+to\s+friday/i, profile: 'friday' },
+          { pattern: /(?:change|switch|use)\s+voice\s+to\s+chatgpt/i, profile: 'chatgpt' },
+          { pattern: /(?:change|switch|use)\s+voice\s+to\s+assistant/i, profile: 'assistant' },
+          { pattern: /(?:change|switch|use)\s+voice\s+to\s+robotic/i, profile: 'robotic' }
+        ];
+
+        for (const { pattern, profile } of voicePatterns) {
+          if (pattern.test(transcript)) {
+            setCurrentVoiceProfile(profile);
+            enhancedTtsEngine.setVoiceProfile(profile);
+            
+            const profileData = enhancedTtsEngine.getAvailableProfiles().find(p => p.name.toLowerCase().includes(profile));
+            const response = `Voice profile changed to ${profileData?.name || profile}. ${profileData?.description || ''}`;
             
             const assistantMessage: Message = {
               type: 'assistant',
@@ -149,22 +159,44 @@ export const useJarvisState = () => {
         const automationResult = await advancedAutomationEngine.executeAdvancedCommand(advancedCommand);
         
         let response = '';
-        let emotion: 'neutral' | 'excited' | 'calm' | 'urgent' = 'neutral';
+        let emotion: 'neutral' | 'excited' | 'calm' | 'urgent' | 'authoritative' = 'authoritative';
         
         if (automationResult.success) {
-          response = automationResult.message;
-          emotion = 'excited';
+          // JARVIS-style responses
+          const jarvisResponses = [
+            "Certainly. ",
+            "Of course. ",
+            "Very well. ",
+            "Affirmative. ",
+            "Indeed. "
+          ];
+          
+          const prefix = currentVoiceProfile.includes('jarvis') ? 
+            jarvisResponses[Math.floor(Math.random() * jarvisResponses.length)] : '';
+          
+          response = prefix + automationResult.message;
+          emotion = 'authoritative';
           
           // Add contextual responses for different automation types
           if (advancedCommand.type === 'openAndSearch') {
-            response += '. The search results should be loading now.';
+            response += '. The search results should be loading momentarily.';
           } else if (advancedCommand.type === 'multiTab') {
-            response += '. All tabs have been opened for your research.';
+            response += '. All requested tabs have been opened for your research.';
           } else if (advancedCommand.type === 'socialMedia') {
             response += '. Your social media platforms are now accessible.';
           }
         } else {
-          response = `I encountered an issue: ${automationResult.message}. Let me try a different approach.`;
+          const jarvisErrorResponses = [
+            "I apologize, but I encountered an issue: ",
+            "Regrettably, there was a complication: ",
+            "I must report a difficulty: "
+          ];
+          
+          const prefix = currentVoiceProfile.includes('jarvis') ? 
+            jarvisErrorResponses[Math.floor(Math.random() * jarvisErrorResponses.length)] : 
+            'I encountered an issue: ';
+          
+          response = prefix + automationResult.message + '. Allow me to attempt an alternative approach.';
           emotion = 'calm';
         }
         
@@ -192,30 +224,60 @@ export const useJarvisState = () => {
           setMessages(prev => [...prev, assistantMessage]);
           setIsProcessing(false);
           setCurrentStatus('Ready');
-          speakResponse('I can help you with advanced automation, web control, and intelligent command chaining. Check the chat for detailed examples.', 'excited');
-        } else {
-          // Use AI service for general queries
-          setCurrentStatus('Thinking...');
-          const aiResponse = await aiService.generateResponse(transcript);
+          
+          const jarvisHelpResponse = currentVoiceProfile.includes('jarvis') ? 
+            'Certainly. I can assist you with advanced automation, web control, and intelligent command chaining. Please review the detailed examples in the chat interface.' :
+            'I can help you with advanced automation, web control, and intelligent command chaining. Check the chat for detailed examples.';
+          
+          speakResponse(jarvisHelpResponse, 'authoritative');
+        } else if (transcript.toLowerCase().includes('test jarvis voice')) {
+          enhancedTtsEngine.testJarvisVoice();
           
           const assistantMessage: Message = {
             type: 'assistant',
-            content: aiResponse.content,
+            content: 'Testing JARVIS voice system. All vocal parameters are functioning within normal parameters.',
             timestamp: new Date()
           };
           
           setMessages(prev => [...prev, assistantMessage]);
           setIsProcessing(false);
           setCurrentStatus('Ready');
-          speakResponse(aiResponse.content);
+        } else {
+          // Use AI service for general queries
+          setCurrentStatus('Thinking...');
+          const aiResponse = await aiService.generateResponse(transcript);
+          
+          // Add JARVIS-style formality to AI responses if using JARVIS voice
+          let finalResponse = aiResponse.content;
+          if (currentVoiceProfile.includes('jarvis')) {
+            if (!finalResponse.match(/^(Certainly|Of course|Indeed|Very well|Affirmative)/)) {
+              const jarvisPrefixes = ["Certainly", "Of course", "Indeed", "Very well"];
+              finalResponse = jarvisPrefixes[Math.floor(Math.random() * jarvisPrefixes.length)] + ". " + finalResponse;
+            }
+          }
+          
+          const assistantMessage: Message = {
+            type: 'assistant',
+            content: finalResponse,
+            timestamp: new Date()
+          };
+          
+          setMessages(prev => [...prev, assistantMessage]);
+          setIsProcessing(false);
+          setCurrentStatus('Ready');
+          speakResponse(finalResponse);
         }
       }
     } catch (error: any) {
       console.error('Advanced Command Processing Error:', error);
       
+      const jarvisErrorMessage = currentVoiceProfile.includes('jarvis') ? 
+        `I regret to inform you that I encountered an error while processing your request: ${error.message || 'Unknown error'}. Please attempt the command again.` :
+        `I apologize, but I encountered an error while processing your advanced request: ${error.message || 'Unknown error'}. Please try again with a different command.`;
+      
       const errorMessage: Message = {
         type: 'assistant',
-        content: `I apologize, but I encountered an error while processing your advanced request: ${error.message || 'Unknown error'}. Please try again with a different command.`,
+        content: jarvisErrorMessage,
         timestamp: new Date()
       };
       
@@ -235,7 +297,12 @@ export const useJarvisState = () => {
     if (success) {
       setCurrentVoiceProfile(profileName);
       const profile = enhancedTtsEngine.getCurrentProfile();
-      speakResponse(`Voice changed to ${profile.name} profile.`);
+      
+      const jarvisConfirmation = profileName.includes('jarvis') ? 
+        `Voice profile changed to ${profile.name}. All vocal systems are now operational with enhanced parameters.` :
+        `Voice changed to ${profile.name} profile.`;
+      
+      speakResponse(jarvisConfirmation);
     }
   }, [speakResponse]);
 
