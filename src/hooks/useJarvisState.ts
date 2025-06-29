@@ -2,8 +2,9 @@ import { useState, useCallback, useRef } from 'react';
 import { Message } from '../types';
 import { enhancedTtsEngine } from '../utils/enhancedTextToSpeech';
 import { aiService } from '../services/aiProviders';
-import { AICommandProcessor } from '../utils/aiCommandProcessor';
-import { advancedAutomationEngine } from '../utils/advancedAutomationEngine';
+import { EnhancedCommandProcessor } from '../utils/enhancedCommandProcessor';
+import { enhancedAutomationEngine } from '../utils/enhancedAutomationEngine';
+import { advancedScrollEngine } from '../utils/advancedScrollEngine';
 
 export const useJarvisState = () => {
   const [isListening, setIsListening] = useState(false);
@@ -14,7 +15,7 @@ export const useJarvisState = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       type: 'assistant',
-      content: 'Good day. I am JARVIS, your advanced artificial intelligence assistant. I can help you with automation tasks, web control, research, and intelligent responses. How may I assist you today?',
+      content: 'Welcome. I am JARVIS, your enhanced artificial intelligence assistant with advanced automation capabilities. I can help you with intelligent web control, multi-platform operations, smart scrolling, and comprehensive research assistance. How may I assist you today?',
       timestamp: new Date()
     }
   ]);
@@ -25,7 +26,6 @@ export const useJarvisState = () => {
     setIsSpeaking(true);
     setCurrentStatus('Speaking...');
     
-    // Use authoritative emotion for JARVIS by default
     const jarvisEmotion = currentVoiceProfile.includes('jarvis') ? 'authoritative' : (emotion || 'neutral');
     
     enhancedTtsEngine.speak(text, {
@@ -72,7 +72,7 @@ export const useJarvisState = () => {
           .join('');
 
         if (event.results[event.results.length - 1].isFinal) {
-          processAdvancedCommand(transcript);
+          processEnhancedCommand(transcript);
         }
       };
 
@@ -103,7 +103,7 @@ export const useJarvisState = () => {
     setCurrentStatus('Ready');
   }, []);
 
-  const processAdvancedCommand = useCallback(async (transcript: string) => {
+  const processEnhancedCommand = useCallback(async (transcript: string) => {
     setIsProcessing(true);
     setCurrentStatus('Processing...');
     
@@ -116,7 +116,7 @@ export const useJarvisState = () => {
     setMessages(prev => [...prev, userMessage]);
 
     try {
-      // Check for voice profile changes with enhanced JARVIS detection
+      // Check for voice profile changes
       const lowerTranscript = transcript.toLowerCase();
       if (lowerTranscript.includes('change voice') || lowerTranscript.includes('switch voice') || lowerTranscript.includes('use voice')) {
         const voicePatterns = [
@@ -151,24 +151,63 @@ export const useJarvisState = () => {
         }
       }
 
-      // Parse advanced automation command
-      const advancedCommand = AICommandProcessor.parseAdvancedCommand(transcript);
+      // Check for stop scrolling command
+      if (lowerTranscript.includes('stop scrolling') || lowerTranscript.includes('stop auto scroll')) {
+        advancedScrollEngine.stopScrolling();
+        
+        const response = currentVoiceProfile.includes('jarvis') ? 
+          'Certainly. Auto-scrolling has been terminated.' :
+          'Auto-scrolling stopped.';
+        
+        const assistantMessage: Message = {
+          type: 'assistant',
+          content: response,
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, assistantMessage]);
+        setIsProcessing(false);
+        setCurrentStatus('Ready');
+        speakResponse(response);
+        return;
+      }
+
+      // Parse enhanced automation command
+      const enhancedCommand = EnhancedCommandProcessor.parseEnhancedCommand(transcript);
       
-      if (advancedCommand) {
-        setCurrentStatus('Executing advanced automation...');
-        const automationResult = await advancedAutomationEngine.executeAdvancedCommand(advancedCommand);
+      if (enhancedCommand) {
+        setCurrentStatus('Executing enhanced automation...');
+        
+        let automationResult;
+        
+        // Handle scroll commands specially
+        if (enhancedCommand.type === 'scroll') {
+          const scrollCommand = {
+            type: enhancedCommand.action || 'scroll',
+            direction: enhancedCommand.parameters?.direction || 'down',
+            amount: enhancedCommand.parameters?.amount,
+            speed: enhancedCommand.parameters?.speed,
+            smooth: enhancedCommand.parameters?.smooth,
+            target: enhancedCommand.parameters?.target,
+            continuous: enhancedCommand.parameters?.continuous
+          };
+          
+          automationResult = await advancedScrollEngine.executeScrollCommand(scrollCommand as any);
+        } else {
+          automationResult = await enhancedAutomationEngine.executeEnhancedCommand(enhancedCommand);
+        }
         
         let response = '';
         let emotion: 'neutral' | 'excited' | 'calm' | 'urgent' | 'authoritative' = 'authoritative';
         
         if (automationResult.success) {
-          // JARVIS-style responses
           const jarvisResponses = [
             "Certainly. ",
             "Of course. ",
             "Very well. ",
             "Affirmative. ",
-            "Indeed. "
+            "Indeed. ",
+            "Absolutely. "
           ];
           
           const prefix = currentVoiceProfile.includes('jarvis') ? 
@@ -178,12 +217,16 @@ export const useJarvisState = () => {
           emotion = 'authoritative';
           
           // Add contextual responses for different automation types
-          if (advancedCommand.type === 'openAndSearch') {
+          if (enhancedCommand.type === 'openAndSearch') {
             response += '. The search results should be loading momentarily.';
-          } else if (advancedCommand.type === 'multiTab') {
-            response += '. All requested tabs have been opened for your research.';
-          } else if (advancedCommand.type === 'socialMedia') {
-            response += '. Your social media platforms are now accessible.';
+          } else if (enhancedCommand.type === 'multiSearch') {
+            response += '. Multiple research sources are now accessible for your review.';
+          } else if (enhancedCommand.type === 'automatedWorkflow') {
+            response += '. Your productivity environment is now optimized and ready.';
+          } else if (enhancedCommand.type === 'scroll') {
+            if (enhancedCommand.action === 'autoScroll') {
+              response += '. You may say "stop scrolling" to halt the automatic scrolling at any time.';
+            }
           }
         } else {
           const jarvisErrorResponses = [
@@ -213,7 +256,7 @@ export const useJarvisState = () => {
       } else {
         // Handle special commands
         if (transcript.toLowerCase().includes('help') || transcript.toLowerCase().includes('what can you do')) {
-          const helpResponse = AICommandProcessor.getAIAutomationHelp();
+          const helpResponse = EnhancedCommandProcessor.getEnhancedAutomationHelp();
           
           const assistantMessage: Message = {
             type: 'assistant',
@@ -226,10 +269,28 @@ export const useJarvisState = () => {
           setCurrentStatus('Ready');
           
           const jarvisHelpResponse = currentVoiceProfile.includes('jarvis') ? 
-            'Certainly. I can assist you with advanced automation, web control, and intelligent command chaining. Please review the detailed examples in the chat interface.' :
-            'I can help you with advanced automation, web control, and intelligent command chaining. Check the chat for detailed examples.';
+            'Certainly. I can assist you with advanced automation, intelligent web control, multi-platform operations, and comprehensive research assistance. Please review the detailed capabilities in the chat interface.' :
+            'I can help you with advanced automation, web control, and intelligent command processing. Check the chat for detailed examples.';
           
           speakResponse(jarvisHelpResponse, 'authoritative');
+        } else if (transcript.toLowerCase().includes('scroll help') || transcript.toLowerCase().includes('scrolling commands')) {
+          const scrollHelp = EnhancedCommandProcessor.getScrollCommandHelp();
+          
+          const assistantMessage: Message = {
+            type: 'assistant',
+            content: scrollHelp,
+            timestamp: new Date()
+          };
+          
+          setMessages(prev => [...prev, assistantMessage]);
+          setIsProcessing(false);
+          setCurrentStatus('Ready');
+          
+          const jarvisScrollResponse = currentVoiceProfile.includes('jarvis') ? 
+            'Certainly. I have comprehensive scrolling capabilities including auto-scroll, smart content detection, and precise navigation controls. Please review the detailed options in the chat interface.' :
+            'I have advanced scrolling features including auto-scroll and smart navigation. Check the chat for all available commands.';
+          
+          speakResponse(jarvisScrollResponse, 'authoritative');
         } else if (transcript.toLowerCase().includes('test jarvis voice')) {
           enhancedTtsEngine.testJarvisVoice();
           
@@ -247,7 +308,6 @@ export const useJarvisState = () => {
           setCurrentStatus('Thinking...');
           const aiResponse = await aiService.generateResponse(transcript);
           
-          // Add JARVIS-style formality to AI responses if using JARVIS voice
           let finalResponse = aiResponse.content;
           if (currentVoiceProfile.includes('jarvis')) {
             if (!finalResponse.match(/^(Certainly|Of course|Indeed|Very well|Affirmative)/)) {
@@ -269,11 +329,11 @@ export const useJarvisState = () => {
         }
       }
     } catch (error: any) {
-      console.error('Advanced Command Processing Error:', error);
+      console.error('Enhanced Command Processing Error:', error);
       
       const jarvisErrorMessage = currentVoiceProfile.includes('jarvis') ? 
         `I regret to inform you that I encountered an error while processing your request: ${error.message || 'Unknown error'}. Please attempt the command again.` :
-        `I apologize, but I encountered an error while processing your advanced request: ${error.message || 'Unknown error'}. Please try again with a different command.`;
+        `I apologize, but I encountered an error while processing your enhanced request: ${error.message || 'Unknown error'}. Please try again with a different command.`;
       
       const errorMessage: Message = {
         type: 'assistant',
@@ -289,8 +349,8 @@ export const useJarvisState = () => {
   }, [speakResponse, currentVoiceProfile]);
 
   const sendMessage = useCallback(async (content: string) => {
-    await processAdvancedCommand(content);
-  }, [processAdvancedCommand]);
+    await processEnhancedCommand(content);
+  }, [processEnhancedCommand]);
 
   const changeVoiceProfile = useCallback((profileName: string) => {
     const success = enhancedTtsEngine.setVoiceProfile(profileName);
