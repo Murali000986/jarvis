@@ -6,6 +6,7 @@ import StatusBar from './components/StatusBar';
 import WelcomeScreen from './components/WelcomeScreen';
 import ScrollControls from './components/ScrollControls';
 import FloatingScrollButton from './components/FloatingScrollButton';
+import ChatHistory from './components/ChatHistory';
 import { useJarvisState } from './hooks/useJarvisState';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
   const [isTablet, setIsTablet] = useState(false);
   const [orientation, setOrientation] = useState<'portrait' | 'landscape'>('portrait');
   const [showScrollControls, setShowScrollControls] = useState(false);
+  const [showChatHistory, setShowChatHistory] = useState(false);
   
   const { 
     isListening, 
@@ -26,7 +28,9 @@ function App() {
     stopListening,
     sendMessage,
     speakResponse,
-    changeVoiceProfile
+    changeVoiceProfile,
+    loadChatSession,
+    startNewChat
   } = useJarvisState();
 
   // Detect device type and orientation
@@ -149,6 +153,16 @@ function App() {
                 </div>
               )}
             </div>
+
+            {/* Chat History */}
+            <ChatHistory
+              isVisible={showChatHistory}
+              onToggle={() => setShowChatHistory(!showChatHistory)}
+              currentMessages={messages}
+              onLoadSession={loadChatSession}
+              onNewChat={startNewChat}
+              isMobile={isMobile}
+            />
 
             {/* Floating Scroll Buttons */}
             <FloatingScrollButton isMobile={isMobile} />

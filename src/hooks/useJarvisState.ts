@@ -22,6 +22,60 @@ export const useJarvisState = () => {
 
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
+  // Chat history management
+  const loadChatSession = useCallback((sessionMessages: Message[]) => {
+    setMessages(sessionMessages);
+  }, []);
+
+  const startNewChat = useCallback(() => {
+    setMessages([
+      {
+        type: 'assistant',
+        content: 'Welcome. I am JARVIS, your enhanced artificial intelligence assistant with advanced automation capabilities. I can help you with intelligent web control, multi-platform operations, smart scrolling, and comprehensive research assistance. How may I assist you today?',
+        timestamp: new Date()
+      }
+    ]);
+    localStorage.removeItem('jarvis-current-session-id');
+  }, []);
+
+  // Auto-save messages to localStorage for persistence
+  const saveMessagesToStorage = useCallback((newMessages: Message[]) => {
+    try {
+      localStorage.setItem('jarvis-current-messages', JSON.stringify(newMessages));
+    } catch (error) {
+      console.error('Error saving messages to storage:', error);
+    }
+  }, []);
+
+  // Load messages from localStorage on initialization
+  const loadMessagesFromStorage = useCallback(() => {
+    try {
+      const savedMessages = localStorage.getItem('jarvis-current-messages');
+      if (savedMessages) {
+        const parsed = JSON.parse(savedMessages);
+        const messagesWithDates = parsed.map((msg: any) => ({
+          ...msg,
+          timestamp: new Date(msg.timestamp)
+        }));
+        setMessages(messagesWithDates);
+      }
+    } catch (error) {
+      console.error('Error loading messages from storage:', error);
+    }
+  }, []);
+
+  // Initialize messages from storage
+  React.useEffect(() => {
+    loadMessagesFromStorage();
+  }, [loadMessagesFromStorage]);
+
+  // Save messages whenever they change
+  React.useEffect(() => {
+    if (messages.length > 1) { // Don't save just the welcome message
+      saveMessagesToStorage(messages);
+    }
+  }, [messages, saveMessagesToStorage]);
+
   const speakResponse = useCallback((text: string, emotion?: 'neutral' | 'excited' | 'calm' | 'urgent' | 'authoritative') => {
     setIsSpeaking(true);
     setCurrentStatus('Speaking...');
@@ -378,6 +432,9 @@ export const useJarvisState = () => {
     sendMessage,
     speakResponse,
     changeVoiceProfile,
-    availableVoiceProfiles: enhancedTtsEngine.getAvailableProfiles()
+    availableVoiceProfiles: enhancedTtsEngine.getAvailableProfiles(),
+    // Chat history functions
+    loadChatSession,
+    startNewChat
   };
 };
